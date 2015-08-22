@@ -1,0 +1,21 @@
+{
+  "name": "PocoHud4",
+  "description": "Hud enhancer for who fancy realtime info",
+  "author": "Zenyr",
+  "contact": "zenyr@zenyr.com",
+  "version": "4.0",
+  "priority": 420,
+  "persist_scripts": [{
+    "global": "PocoHud4",
+    "script_path": "PocoHud4.lua"
+  }],
+  "keybinds": [{
+    "keybind_id": "reload_pocohud4",
+    "name": "Reload PocoHud4",
+    "description": "Unregisters PocoHud4 resulting a reload",
+    "script_path": "PocoHud4_reload.lua",
+    "run_in_menu": true,
+    "run_in_game": true,
+    "localized": false
+  }]
+}
