@@ -1,5 +1,5 @@
 PocoHud4.moduleBegin()
-Promise = PocoHud4.import('Util/Promise')
+Promise = ROOT.import('Util/Promise')
 inGame = CopDamage ~= nil
 now = function (type) return type and TimerManager:game():time() or managers.player:player_timer():time() end
 cl = {
@@ -196,8 +196,14 @@ _ = {
       end
     end
   end,
-  I = PocoHud4.import('Util/Inspect'),
-  J = PocoHud4.import('Util/Json'),
+  I = ROOT.import('Util/Inspect'),
+  U = function(t,i) -- nil safe unpack
+    i = i or 1
+    if t[i] ~= nil then
+      return t[i], _.U(t, i + 1)
+    end
+  end,
+  J = ROOT.import('Util/Json'),
   SC = function (orig,strong) -- Shallow Copy
     local orig_type = type(orig)
     local copy
