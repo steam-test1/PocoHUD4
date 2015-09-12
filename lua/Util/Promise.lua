@@ -383,3 +383,5 @@ function Promise(handler)
 	end
 	return promise
 end
+export = Promise
+PocoHud4.moduleEnd()

@@ -1,7 +1,6 @@
 --[[PocoHud4 Entrypoint]]
-PocoHud4.moduleBegin()
-local inspect = PocoHud4.import('UtilInspect')
-
-log('Inspect..'..type( inspect ))
+local ENV = PocoHud4.moduleBegin()
+PocoHud4.import('Common',ENV)
+_.c(_.s( 'PH4 Loaded',PocoHud4._INSTANCE) )
 
 PocoHud4.moduleEnd()
