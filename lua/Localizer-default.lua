@@ -1,0 +1,50 @@
+-- PocoHud4 Config manager
+local ENV = PocoHud4.moduleBegin()
+
+local _defaultLocaleData = {
+	_client_name = 'PocoHud3',
+	_about_trans_fullList = '{Dansk (DA)|Tan}\nNickyFace, DanishDude93\n{Deutsch (DE)|Tan}\nfallenpenguin, Raxdor, GIider, Hoffy,\nNowRiseAgain, Pixelpille, Sithryl,\nValkein, Zee_, baddog_11\n{Español (ES)|Tan}\nNiccy, BurnBabyBurn\n{Français (FR)|Tan}\nChopper385, Dewk Noukem, Lekousin, Shendow\n{Italiano (IT)|Tan}\nOktober, Nitronik\n{Bahasa Indonesia (ID)|Tan}\nPapin Faizal(papin97)\n{Nederlands (NL)|Tan}\nNickolas Cat, Rezqual\n{Norsk (NO)|Tan}\nikoddn\n{Polski (PL_PL)|Tan}\nMartinz, Kuziz, gmaxpl3\n{Português (PT_PT)|Tan}\nBruno \"Personagem\" Tibério, John Ryder\n{Português (PT_BR)|Tan}\njkisten\n{Русский (RU)|Tan}\ncollboy, Hellsing, troskahtoh\n{Svenska (SV_SE)|Tan}\nTheLovinator, KillYoy, kao172',
+	_about_trans_special_thanks_list = '{Overkill|White}\nfor a legendary game {& not kicking my arse off|Silver|0.5}\n{Harfatus|White}\nfor a cool injector\n{Olipro|White}\nfor keeping MOD community alive\n{v00d00 & gir489 & 90e|White}\nfor making me able to learn Lua from the humble ground\n{Arkkat|White}\nfor crashing the game for me at least 50 times since alpha stage\n{Tatsuto|White}\nfor PD2Stats.com API\n{You|Yellow}\nfor keeping me way too busy to go out at weekends {/notreally|Silver|0.5}',
+	_kit_equip_btn_hint = '{_kit_equip_btn_hint1} {_kit_equip_btn_hint2|Tan}\n{_kit_equip_btn_hint3} {_kit_equip_btn_hint4|Red} {_kit_equip_btn_hint5}',
+	_kit_key_edit_hint = '{_kit_key_edit_hint1}  {_kit_key_edit_hint2|Yellow} {_kit_key_edit_hint3}\n{_kit_key_edit_hint4|Silver}\n{_kit_key_edit_hint5|Red}',
+	_kit_profiler_desc = '{_Chapter} {_kit_profiler_desc1} {_RC|White} {_kit_profiler_desc2|White}',
+	_kit_save_desc = '{_Chapter} {_kit_save_desc1} {_RC|White} {_kit_save_desc2|White}',
+	_kit_save_hint = '{_kit_save_hint1|Tan} / {_kit_save_hint2|Tomato} {_kit_save_hint3}',
+	_kit_saved_kits_title = '{_Chapter} {_kit_saved_kits_title1} {_RC|White} {_kit_saved_kits_title2|White}',
+	_mob_city_swat = 'a Gensec Elite',
+	_mob_cop = 'a cop',
+	_mob_fbi = 'an FBI agent',
+	_mob_fbi_heavy_swat = 'an FBI heavy SWAT',
+	_mob_fbi_swat = 'an FBI SWAT',
+	_mob_gangster = 'a gangster',
+	_mob_gensec = 'a Gensec guard',
+	_mob_heavy_swat = 'a heavy SWAT',
+	_mob_security = 'a guard',
+	_mob_shield = 'a shield',
+	_mob_sniper = 'a sniper',
+	_mob_spooc = 'a cloaker',
+	_mob_swat = 'a SWAT',
+	_mob_tank = 'a bulldozer',
+	_mob_taser = 'a taser',
+	_msg_around = 'around [1]',
+	_msg_captured = '[1] has been captured [2]',
+	_msg_converted = '[1] converted [2] [3]',
+	_msg_downed = '[1] was downed',
+	_msg_downedWarning = 'Warning: [1] has been downed [2] times',
+	_msg_minionLost = '[1] lost a minion to [2] [3].',
+	_msg_minionShot = '[1] damaged [2] minion for [3]',
+	_msg_not_implemented = 'Not Implemented for now',
+	_msg_repenished = '[1] replenished health by [2]% [3]',
+	_msg_replenishedDown = '(+[1] down)',
+	_msg_replenishedDownPlu = '(+[1] downs)',
+	_msg_usedPistolMessiah = 'Used Pistol messiah, [1] left.',
+	_msg_usedPistolMessiahCharges = '[1] charge',
+	_msg_usedPistolMessiahChargesPlu = '[1] charges',
+	_opt_chat_desc = '{_opt_chat_desc_1}\n{_opt_chat_desc_2|White|0.5}\n{_opt_chat_desc_3|White|0.6}\n{_opt_chat_desc_4|White|0.7}\n{_opt_chat_desc_5|White|0.8}\n{_opt_chat_desc_6|White|0.9}\n{_opt_chat_desc_7|White}',
+	_opt_truncateTags_desc = '{_opt_truncateTags_desc_1} {[Poco]Hud|Tan} > {_Dot|Tan}{Hud|Tan}',
+	_vanity_resizeCrimenet = '60%,70%,80%,90%,100%,110%,120%,130%',
+}
+
+export = _defaultLocaleData
+
+PocoHud4.moduleEnd()

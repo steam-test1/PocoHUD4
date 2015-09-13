@@ -10,9 +10,17 @@
     "script_path": "PocoHud4.lua"
   }],
   "keybinds": [{
-    "keybind_id": "reload_pocohud4",
+    "keybind_id": "pocohud4_open",
+    "name": "Open PocoHud4 menu",
+    "description": "Opens PocoHud4 configuration menu",
+    "script_path": "PocoHud4_menu.lua",
+    "run_in_menu": true,
+    "run_in_game": true,
+    "localized": false
+  },{
+    "keybind_id": "pocohud4_reload",
     "name": "Reload PocoHud4",
-    "description": "Unregisters PocoHud4 resulting a reload",
+    "description": "Unregisters PocoHud4 for a reload",
     "script_path": "PocoHud4_reload.lua",
     "run_in_menu": true,
     "run_in_game": true,
