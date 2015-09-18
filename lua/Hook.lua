@@ -84,7 +84,7 @@ function Hook:isValid()
   return self.active and ROOT.active
 end
 
-function Hook:kill()
+function Hook:stop()
   self.active = false
 end
 

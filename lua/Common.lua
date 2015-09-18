@@ -163,35 +163,7 @@ _ = {
     end
     return result, lbl
   end,
-  M = function(orig,new,copy) -- Object.assign-ish
-    if copy then
-      orig = _.DC(orig)
-    end
-    local merge_task = {}
-     merge_task[orig] = new
-
-     local left = orig
-     while left ~= nil do
-        local right = merge_task[left]
-        for new_key, new_val in pairs(right or {}) do
-           local old_val = left[new_key]
-           if old_val == nil then
-              left[new_key] = new_val
-           else
-              local old_type = type(old_val)
-              local new_type = type(new_val)
-              if (old_type == "table" and new_type == "table") then
-                 merge_task[old_val] = new_val
-              else
-                 left[new_key] = new_val
-              end
-           end
-        end
-        merge_task[left] = nil
-        left = next(merge_task)
-     end
-     return orig
-  end,
+  M = mix,
   T = function(utc, compare)
     -- HORRIBLY inaccurate due to game's lua engine
     local t = os.time( os.date((utc and '!' or '') ..'*t') )
