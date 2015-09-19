@@ -9,7 +9,7 @@ function UI:init()
 	self.ws = managers.gui_data:create_fullscreen_workspace()
 	self.ppnl = self.ws:panel()
 	local w, h = self.ws:size()
-	self.pnl = self.ppnl:panel({ name = 'UI', x=0, y=0, w = w, h = h, layer = tweak_data.gui.DIALOG_LAYER})
+	self.pnl = self.ppnl:panel({ name = 'UI', x=0, y=0, w = w, h = h, layer = tweak_data.gui.MENU_COMPONENT_LAYER})
 	self.elems = {}
 
 	self:_bakeMouseQuery('Press')
@@ -88,13 +88,20 @@ function UI:queryMouseMove(o, ... ) -- x, y
 
 	for k,itm in ipairs(self.elems or {}) do
 		if not stop then
-			process( itm:queryMouseMoved( ... ) )
+			process( itm:queryMouseMove( ... ) )
 		end
 	end
 	if cursor then -- arrow, link, hand, grab
 		managers.mouse_pointer:set_pointer_image( cursor)
 	end
 	if sound then
+		--[[ menu_enter highlight crime_net_startup zoom_in zoom_out
+		loot_flip_card loot_fold_cards loot_gain_low loot_gain_med loot_gain_high
+		Play_star_hit box_tick box_untick count_1 count_1_finished stinger_levelup
+		selection_next selection_previous item_sell finalize_mask item_buy menu_error
+		menu_skill_investment prompt_enter slider_grab slider_release
+		sidejob_stinger_long sidejob_stinger_short
+		]]
 		managers.menu_component:post_event( sound )
 	end
 end

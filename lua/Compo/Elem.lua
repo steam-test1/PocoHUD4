@@ -2,14 +2,19 @@ local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common', ENV)
 local Elem = class()
 
-function Elem:init(owner,...) -- x,y,w,h[,font,fontSize]
+function Elem:init(...) -- x,y,w,h[,font,fontSize]
+	self:baseInit( ... )
 	self.name = 'Elem'
+end
+
+function Elem:baseInit(owner, ...)
 	owner:registerElem(self)
 	self.owner = owner
-	self.config = _.m({x=0,y=0,w=100,h=100},...)
+	self.config = _.m({x=0,y=0,w=100,h=100}, ...)
 	self.ppnl = owner.pnl
 	self.pnl = self.ppnl:panel(self.config)
-	self.pnl:rect{color = cl.Blue:with_alpha(0.5)}
+	self.pnl:rect{color = cl.Blue:with_alpha(0.2)}
+	self.extraPnls = {}
 	self.elems = {}
 	self.listeners = {}
 	self:_bakeMouseQuery('Press')
@@ -23,6 +28,7 @@ function Elem:setCursor(cursor)
 	__, self._cursorListener = self:on('move', function()
 		return false, false, cursor
 	end)
+	return self
 end
 
 function Elem:clearCursor()
@@ -50,12 +56,19 @@ function Elem:off(event, key)
 	return self
 end
 
+function Elem:triggerElems(...)
+	for __, elem in ipairs(self.elems) do
+		elem:trigger(...)
+	end
+	return self
+end
+
 function Elem:trigger(event, ...)
 	event = event:lower()
 	if not self.dead and self.listeners[event] then
 		local results = {}
 		for key,listener in pairs(self.listeners[event]) do
-			results = {pcall(listener, self, ...)}
+			results = {pcall(listener, ...)}
 			if results[1] then
 				table.remove(results,1)
 				return unpack(results)
@@ -67,12 +80,17 @@ function Elem:trigger(event, ...)
 end
 
 function Elem:destroy()
+	self:baseDestroy()
+end
+
+function Elem:baseDestroy()
 	self.dead = true
 	for k,elem in ipairs(self.elems) do
 		elem:destroy()
 	end
 	self.owner = nil
 	self.elems = nil
+	self.extraPnls = nil
 	self.ppnl:remove(self.pnl)
 end
 
@@ -88,8 +106,21 @@ function Elem:getRoot()
 	return entity
 end
 
-function Elem:queryMouseMoved( x, y )
-	local isInside = self.pnl:inside( x, y )
+function Elem:inside(x,y)
+	local result = self.pnl:inside(x,y)
+	if not result then
+		for __, pnl in pairs(self.extraPnls) do
+			if alive(pnl) and pnl:visible() and pnl:inside(x,y) then
+				result = true
+				break
+			end
+		end
+	end
+	return result
+end
+
+function Elem:queryMouseMove( x, y )
+	local isInside = self:inside( x, y )
 	local stop, sound, cursor
 	local process = function(_stop, _sound, _cursor)
 		stop, sound, cursor = _stop, _sound or sound, _cursor or cursor
@@ -100,7 +131,7 @@ function Elem:queryMouseMoved( x, y )
 		end
 		for __, elem in ipairs(self.elems or {}) do
 			if not stop then
-				process( elem:queryMouseMoved( x, y ) )
+				process( elem:queryMouseMove( x, y ) )
 			end
 		end
 		if not stop then
@@ -117,7 +148,7 @@ end
 
 function Elem:_bakeMouseQuery( typeName, button, ... )
 	self['queryMouse'..typeName] = function ( self, button, ... ) -- button, x, y
-		local isInside = self.pnl:inside( ... )
+		local isInside = self:inside( ... )
 		local stop, sound
 		local process = function(_stop, _sound)
 			stop, sound = _stop, _sound or sound
@@ -132,7 +163,7 @@ function Elem:_bakeMouseQuery( typeName, button, ... )
 				process( self:trigger(typeName, button, ... ) )
 			end
 		end
-		return stop, sound
+		return stop, sound or (stop and 'menu_enter' )
 	end
 end
 
