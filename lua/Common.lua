@@ -193,6 +193,11 @@ _ = {
       return t[i], _.U(t, i + 1)
     end
   end,
+  B = function(obj, functionName, ...) -- bind
+    if obj and obj[functionName] then
+      return callback( obj, obj, functionName, ...)
+    end
+  end,
   J = ROOT.import('Util/Json'),
   DC = ROOT.import('Util/Deepcopy'),
   SC = function (orig,strong) -- Shallow Copy

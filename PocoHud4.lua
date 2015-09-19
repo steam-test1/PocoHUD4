@@ -60,7 +60,10 @@ PocoMods.import = function (name, spread)
 end
 PocoMods._kbd = Input:keyboard()
 PocoMods.unload = function()
-  PocoMods.Menu():hide(true)
+  if PocoMods.UI then
+    PocoMods.UI:destroy()
+    PocoMods.UI = nil
+  end
   for name in pairs(modules) do
     if type(modules[name])=='table' and rawget(modules[name],'destroy') then
       modules[name].destroy()
@@ -68,6 +71,7 @@ PocoMods.unload = function()
     modules[name] = nil
   end
   PocoMods.active = false
+
 end
 PocoMods.active = true
 function PocoMods:sanitizeKey(key)
@@ -156,8 +160,6 @@ function PocoMods:Bind(sender,key,downCbk,upCbk)
 end
 
 PocoHud4 = setmetatable(PocoMods,{__index=modules})
-PocoMods.Menu = PocoMods.import('Menu')
-PocoMods.ws = Overlay:gui():create_screen_workspace()
-
+PocoHud4.UI = PocoHud4.import('Compo/UI'):new()
 log('--'..PocoHud4._INSTANCE..' PH4 Loaded on '.._VERSION..' --')
 PocoMods.import('Entry')

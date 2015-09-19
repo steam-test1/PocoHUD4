@@ -5,6 +5,7 @@ local Hook = ROOT.import('Hook')
 
 local buttonStrings = {0,1,2,3,4,'mouse wheel down','mouse wheel up'}
 function UI:init()
+	self._name = 'UI';
 	self.ws = managers.gui_data:create_fullscreen_workspace()
 	self.ppnl = self.ws:panel()
 	local w, h = self.ws:size()
@@ -24,7 +25,7 @@ function UI:init()
 		Hook(_G.PlayerStandard):block('_get_input', mouseThunk, {}),
 		Hook(_G.MenuRenderer):block('mouse_moved', mouseThunk, true),
 		Hook(_G.MenuInput):block('mouse_moved', mouseThunk, true),
-		-- Hook(_G.MenuManager):block('toggle_menu_state', mouseThunk, callback(self,self,'hide',false))
+		-- Hook(_G.MenuManager):block('toggle_menu_state', mouseThunk, _.b(self,'hide',false))
 	}
 
 	self.buttonIDs = {}
@@ -34,8 +35,18 @@ function UI:init()
 end
 
 function UI:registerElem(elem)
+	_('RegElem @',self._name)
 	if self.elems then
 		table.insert(self.elems,elem)
+	end
+end
+
+function UI:remove(elem)
+	if self.elems then
+		for k, foundElem in ipairs(self.elems) do
+			elem:destroy()
+			table.remove(self.elems,k)
+		end
 	end
 end
 
@@ -44,7 +55,6 @@ function UI:bringToFront(elem)
 		for k, foundElem in ipairs(self.elems) do
 			if foundElem == elem then
 				self.elems[1], self.elems[k] = elem, self.elems[1]
-				_(k,'번 elem을 1과 교체')
 				break
 			end
 		end
@@ -71,10 +81,14 @@ function UI:onCancel()
 end
 
 function UI:queryMouseMove(o, ... ) -- x, y
-	local stop, cursor, sound = false
+	local stop, cursor, sound
+	local process = function(_stop, _sound, _cursor)
+		stop, sound, cursor = _stop, _sound or sound, _cursor or cursor
+	end
+
 	for k,itm in ipairs(self.elems or {}) do
 		if not stop then
-			stop, sound, cursor = itm:queryMouseMoved( ... )
+			process( itm:queryMouseMoved( ... ) )
 		end
 	end
 	if cursor then -- arrow, link, hand, grab
@@ -88,10 +102,13 @@ end
 function UI:_bakeMouseQuery( typeName, ... )
 	self['queryMouse'..typeName] = function ( __ , o, button, ... ) -- button, x, y
 		local stop, sound
+		local process = function(_stop, _sound)
+			stop, sound = _stop, _sound or sound
+		end
 		button = self.buttonIDs[button:key()] or button
 		for k,itm in ipairs(self.elems or {}) do
 			if not stop then
-				stop, sound = itm['queryMouse'..typeName]( itm, button, ... )
+				process( itm['queryMouse'..typeName]( itm, button, ... ) )
 			end
 		end
 		if sound then
@@ -107,11 +124,11 @@ function UI:useMouse(value)
 		if value then
 			self._mouse_id = managers.mouse_pointer:get_id()
 			local data = {}
-			data.mouse_move = callback(self, self, 'queryMouseMove')
-			data.mouse_press = callback(self, self, 'queryMousePress')
-			data.mouse_release = callback(self, self, 'queryMouseRelease')
-			data.mouse_click = callback(self, self, 'queryMouseClick')
-			data.mouse_double_click = callback(self, self, 'queryMouseDblClick')
+			data.mouse_move = _.b(self, 'queryMouseMove')
+			data.mouse_press = _.b(self, 'queryMousePress')
+			data.mouse_release = _.b(self, 'queryMouseRelease')
+			data.mouse_click = _.b(self, 'queryMouseClick')
+			data.mouse_double_click = _.b(self, 'queryMouseDblClick')
 			data.id = self._mouse_id
 			managers.mouse_pointer:use_mouse(data)
 		else

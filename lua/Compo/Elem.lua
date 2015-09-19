@@ -3,6 +3,7 @@ local _ = ROOT.import('Common', ENV)
 local Elem = class()
 
 function Elem:init(owner,...) -- x,y,w,h[,font,fontSize]
+	self.name = 'Elem'
 	owner:registerElem(self)
 	self.owner = owner
 	self.config = _.m({x=0,y=0,w=100,h=100},...)
@@ -17,12 +18,36 @@ function Elem:init(owner,...) -- x,y,w,h[,font,fontSize]
 	self:_bakeMouseQuery('DblClick')
 end
 
+function Elem:setCursor(cursor)
+	local __
+	__, self._cursorListener = self:on('move', function()
+		return false, false, cursor
+	end)
+end
+
+function Elem:clearCursor()
+	if self._cursorListener then
+		self:off('enter',self._cursorListener)
+	end
+	return self
+end
+
 function Elem:on(event, fn, key)
+	if not self then error('[Elem:on] !self') end
+	if not event then error('[Elem:on] !event') end
 	event = event:lower()
 	key = key or ('%x'):format(math.random(0,0xffffff))
 	self.listeners[event] = self.listeners[event] or {}
 	self.listeners[event][key] = fn
-	return key
+	return self, key
+end
+
+function Elem:off(event, key)
+	event = event:lower()
+	if self.listeners[event] and self.listeners[event][key] then
+		table.remove(self.listeners[event], key)
+	end
+	return self
 end
 
 function Elem:trigger(event, ...)
@@ -30,9 +55,12 @@ function Elem:trigger(event, ...)
 	if not self.dead and self.listeners[event] then
 		local results = {}
 		for key,listener in pairs(self.listeners[event]) do
-			results = {listener(self, ...)}
+			results = {pcall(listener, self, ...)}
 			if results[1] then
+				table.remove(results,1)
 				return unpack(results)
+			else
+				_('[Elem:trigger] listener failed')
 			end
 		end
 	end
@@ -63,44 +91,55 @@ end
 function Elem:queryMouseMoved( x, y )
 	local isInside = self.pnl:inside( x, y )
 	local stop, sound, cursor
+	local process = function(_stop, _sound, _cursor)
+		stop, sound, cursor = _stop, _sound or sound, _cursor or cursor
+	end
 	if isInside then
 		if not self.isInside then
-			stop, sound, cursor = self:trigger('enter', x, y )
+			process( self:trigger('enter', x, y ) )
 		end
-		for __, v in ipairs(self.elems or {}) do
+		for __, elem in ipairs(self.elems or {}) do
 			if not stop then
-				stop, sound, cursor = self:queryMouseMoved( x, y )
+				process( elem:queryMouseMoved( x, y ) )
 			end
 		end
 		if not stop then
-			stop, sound, cursor = self:trigger('move', x, y )
+			process( self:trigger('move', x, y ) )
 		end
 	else
 		if self.isInside then
-			stop, sound, cursor = self:trigger('leave', x, y )
+			process( self:trigger('leave', x, y ) )
 		end
 	end
 	self.isInside = isInside
-	return stop, sound, cursor
+	return stop, sound, cursor or (isInside and 'arrow')
 end
 
 function Elem:_bakeMouseQuery( typeName, button, ... )
 	self['queryMouse'..typeName] = function ( self, button, ... ) -- button, x, y
 		local isInside = self.pnl:inside( ... )
 		local stop, sound
+		local process = function(_stop, _sound)
+			stop, sound = _stop, _sound or sound
+		end
 		if isInside then
-			for k,itm in ipairs(self.elems or {}) do
+			for k,elem in ipairs(self.elems or {}) do
 				if not stop then
-					stop, sound = itm['queryMouse'..typeName]( itm, button, ... )
+					process( elem['queryMouse'..typeName]( elem, button, ... ) )
 				end
 			end
 			if not stop then
-				stop, sound = self:trigger(typeName, button, ... )
+				process( self:trigger(typeName, button, ... ) )
 			end
 		end
 		return stop, sound
 	end
 end
+
+local _UI = ROOT.import('Compo/UI')
+Elem.registerElem = _UI.registerElem
+Elem.remove = _UI.remove
+Elem.bringToFront = _UI.bringToFront
 
 export = Elem
 PocoHud4.moduleEnd()
