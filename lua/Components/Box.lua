@@ -1,6 +1,6 @@
 local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common', ENV)
-local Elem = ROOT.import('Compo/Elem')
+local Elem = ROOT.import('Components/Elem')
 local Box = class(Elem)
 local scrollAmount = 20
 

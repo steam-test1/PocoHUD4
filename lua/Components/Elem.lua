@@ -1,6 +1,6 @@
 local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common', ENV)
-local BaseElem = ROOT.import('Compo/BaseElem', ENV)
+local BaseElem = ROOT.import('Components/BaseElem', ENV)
 local ContextElem = class(BaseElem)
 
 function ContextElem:init(...)
@@ -11,7 +11,7 @@ function ContextElem:init(...)
 end
 
 function ContextElem:_bindMenu(conf)
-	local ListBox = ROOT.import('Compo/ListBox')
+	local ListBox = ROOT.import('Components/ListBox')
 	self:on('click',function(b,x,y)
 		if b == 1 then
 			local menuElem = ListBox:new(self:getRoot(),{

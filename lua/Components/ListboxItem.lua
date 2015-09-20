@@ -1,6 +1,6 @@
 local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common', ENV)
-local Button = ROOT.import('Compo/Button', ENV)
+local Button = ROOT.import('Components/Button', ENV)
 local ListboxItem = class(Button)
 
 function ListboxItem:init( ... ) -- x,y,w,h[,font,fontSize] + items

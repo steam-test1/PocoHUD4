@@ -206,7 +206,7 @@ function Elem:_bakeMouseQuery( typeName, button, ... )
 	end
 end
 
-local _UI = ROOT.import('Compo/UI')
+local _UI = ROOT.import('Components/UI')
 Elem.registerElem = _UI.registerElem
 Elem.remove = _UI.remove
 Elem.bringToFront = _UI.bringToFront
