@@ -163,16 +163,19 @@ function PocoMods:Menu(drawFunc)
   if drawFunc then
   	self.UI:useMouse(true)
     self._menuElem = self.UI:draw(drawFunc)
+    managers.menu_component:post_event('menu_enter')
   else
     if self._menuElem then
       self.UI:setTaunt()
       self.UI:useMouse(false)
       self.UI:remove(self._menuElem)
+      managers.menu_component:post_event('menu_exit')
       self._menuElem = nil
     end
   end
   return self.UI
 end
+
 
 PocoHud4 = setmetatable(PocoMods,{__index=modules})
 PocoHud4.UI = PocoHud4.import('Components/UI'):new()

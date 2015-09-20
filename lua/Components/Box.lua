@@ -12,8 +12,8 @@ function Box:init( ... ) -- x,y,w,h[,font,fontSize] + [noBorder]
 			sides = {
 				1,
 				1,
-				1,
-				1
+				2,
+				2
 			}
 		})
 	end

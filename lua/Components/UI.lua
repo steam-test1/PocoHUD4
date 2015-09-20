@@ -9,7 +9,7 @@ function UI:init()
 	self.ws = managers.gui_data:create_fullscreen_workspace()
 	self.ppnl = self.ws:panel()
 	local w, h = self.ws:size()
-	self.pnl = self.ppnl:panel({ name = 'UI', x=0, y=0, w = w, h = h, layer = tweak_data.gui.MENU_COMPONENT_LAYER})
+	self.pnl = self.ppnl:panel({ name = 'UI', x=0, y=0, w = w, h = h, layer = tweak_data.gui.MENU_LAYER})
 	self.elems = {}
 
 	self:_bakeMouseQuery('Press')
@@ -25,7 +25,6 @@ function UI:init()
 		Hook(_G.PlayerStandard):block('_get_input', mouseThunk, {}),
 		Hook(_G.MenuRenderer):block('mouse_moved', mouseThunk, true),
 		Hook(_G.MenuInput):block('mouse_moved', mouseThunk, true),
-		-- Hook(_G.MenuManager):block('toggle_menu_state', mouseThunk, _.b(self,'hide',false))
 	}
 
 	self.buttonIDs = {}

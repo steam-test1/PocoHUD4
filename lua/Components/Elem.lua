@@ -16,7 +16,7 @@ function ContextElem:_bindMenu(conf)
 		if b == 1 then
 			local menuElem = ListBox:new(self:getRoot(),{
 				x=x+2,y=y+2,w=150,h=math.min(#conf*20, 300), scroll=true,items=conf,
-				layer=100, fontSize=self.config.fontSize, bgColor=cl.Black:with_alpha(0.8)
+				layer=100, fontSize=self.config.fontSize, bgColor=cl.Black:with_alpha(0.5)
 			})
 			self:getRoot():setTaunt(menuElem)
 			self.menuElem = menuElem

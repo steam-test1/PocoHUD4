@@ -17,19 +17,20 @@ function Listbox:init(...) -- x,y,w,h[,font,fontSize] + items
 			-- itm == {itmName, itmCallback}
 			local btn = Button:new(self,{
 				x = 0, y = y, w = conf.w, h = itemHeight, text = itm[1], noBorder = true,
-				fontSize = conf.fontSize, bgColor=(math.mod(ind,2)==0 and cl.Black or cl.White):with_alpha(0.05)
+				fontSize = conf.fontSize
 			})
 			if itm[2] then
 				btn:on('click',function(b,...)
 					if b==0 then
 						itm[2]()
-						return false, 'prompt_exit'
+						self:getRoot():setTaunt()
+						return true, 'prompt_exit'
 					end
 				end)
 			end
 			y = y + itemHeight + margin
 		end
-		self:autoSize(0)
+		self:autoSize(10)
 	end
 	self._border = BoxGuiObject:new(self.outerPnl, {
 		sides = {

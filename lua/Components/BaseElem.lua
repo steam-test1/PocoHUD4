@@ -9,7 +9,7 @@ function Elem:init( owner, ...) -- x,y,w,h[,font,fontSize,contextMenu,bgColor]
 	self.dead = false
 	owner:registerElem(self)
 	self.owner = owner
-	self.config = _.m({x=0,y=0,w=100,h=100,pnl=owner.pnl}, ...)
+	self.config = _.m({x=0,y=0,w=100,h=100,pnl=owner.pnl,color=tweak_data.screen_colors.button_stage_3}, ...)
 	self.ppnl = self.config.pnl
 	self.pnl = self.ppnl:panel(self.config)
 	self.extraPnls = {}
@@ -17,7 +17,7 @@ function Elem:init( owner, ...) -- x,y,w,h[,font,fontSize,contextMenu,bgColor]
 	self.listeners = {}
 
 	if self.config.bgColor then
-		self.pnl:rect{color = self.config.bgColor}
+		self.bgRect = self.pnl:rect{color = self.config.bgColor, layer=0}
 	end
 	self:_bakeMouseQuery('Press')
 	self:_bakeMouseQuery('Release')
@@ -72,6 +72,19 @@ function Elem:off(event, key)
 	return self
 end
 
+function Elem:getDeepName()
+	local entity, failSafe, name = self, 20, ''
+	while entity.owner do
+		name = self.name .. ' ' .. name
+		entity = entity.owner
+		failSafe = failSafe - 1
+		if failSafe <= 0 then
+			return
+		end
+	end
+	return entity
+end
+
 function Elem:disable()
 	self._maxAlpha = 0.5
 	self.pnl:set_alpha(self._maxAlpha)
@@ -100,7 +113,9 @@ function Elem:trigger(event, ...)
 			results = {pcall(listener, ...)}
 			if results[1] then
 				table.remove(results,1)
-				return unpack(results)
+				if results[1] then
+					return unpack(results)
+				end
 			else
 				_('[Elem:trigger] listener failed')
 			end
