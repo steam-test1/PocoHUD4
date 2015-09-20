@@ -159,6 +159,21 @@ function PocoMods:Bind(sender,key,downCbk,upCbk)
 	end
 end
 
+function PocoMods:Menu(drawFunc)
+  if drawFunc then
+  	self.UI:useMouse(true)
+    self._menuElem = self.UI:draw(drawFunc)
+  else
+    if self._menuElem then
+      self.UI:setTaunt()
+      self.UI:useMouse(false)
+      self.UI:remove(self._menuElem)
+      self._menuElem = nil
+    end
+  end
+  return self.UI
+end
+
 PocoHud4 = setmetatable(PocoMods,{__index=modules})
 PocoHud4.UI = PocoHud4.import('Compo/UI'):new()
 log('--'..PocoHud4._INSTANCE..' PH4 Loaded on '.._VERSION..' --')

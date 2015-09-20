@@ -27,7 +27,7 @@ _ = {
   F = function (n,k) -- formatfloat
     k = k or 2
     if type(n) == 'number' then
-      local r = string.format('%.'..k..'g', n):sub(1,k+2)
+      local r = string.format('%.'..k..'g', n)--:sub(1,k+2)
       return r:find('e') and tostring(math.floor(n)) or r
     elseif type(n) == 'table' then
       return _.i(n):gsub('\n','')
@@ -112,6 +112,15 @@ _ = {
     end
   end,
   L = function(lbl, txts, autoSize) -- New FillLbl
+    --[[ Usage
+    1. Creating
+      local mergedText, lbl = _.l(
+        { pnl = parentPanel, x, y, w, h, [font, font_size, color, align, vertical]},
+        texts:Obj, autoSize:Bool
+      )
+    2. Modifying
+      _.l(existingLbl:Userdata, texts:Obj, autoSize:Bool) = mergedText, existingLbl
+    ]]
     local result = ''
     local isTable = type(txts)=='table'
     if not isTable then
