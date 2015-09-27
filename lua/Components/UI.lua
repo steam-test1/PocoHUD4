@@ -144,7 +144,7 @@ function UI:_bakeMouseQuery( typeName, ... )
 		button = self.buttonIDs[button:key()] or button
 		if tauntElem then
 			process( tauntElem['queryMouse'..typeName]( tauntElem, button, ... ) )
-			if not stop and typeName == 'Click' then
+			if not stop and not tauntElem:inside( ... ) and typeName == 'Click' then
 				self:setTaunt(nil)
 			end
 		else

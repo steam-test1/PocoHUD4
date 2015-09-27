@@ -22,6 +22,7 @@ function Button:init(...) -- x,y,w,h[,font,fontSize] + [noBorder]
 			:on('leave',function()
 				self.bgRect:set_alpha(0.3)
 			end)
+			self.bgRect:set_alpha(0.3)
 		end
 	else
 		self._border = BoxGuiObject:new(self.pnl, {
@@ -38,9 +39,11 @@ function Button:init(...) -- x,y,w,h[,font,fontSize] + [noBorder]
 	end
 	local mergedText, lbl = _.l(
 		_.m({	align = 'center', vertical = 'center', blend_mode='add'}, conf, { pnl = self.pnl, x = 0, y = 0}),
-		conf.text, false
+		conf.text or '', false
 	)
-	self:_refineText(lbl)
+	if lbl and mergedText ~= '' then
+		self:_refineText(lbl)
+	end
 	self.lbl = lbl
 end
 

@@ -13,7 +13,7 @@ end
 function ContextElem:_bindMenu(conf)
 	local ListBox = ROOT.import('Components/ListBox')
 	self:on('click',function(b,x,y)
-		if b == 1 then
+		if b == 1 or ( b == 0 and self.config.primaryContextMenu ) then
 			local menuElem = ListBox:new(self:getRoot(),{
 				x=x+2,y=y+2,w=150,h=math.min(#conf*20, 300), scroll=true,items=conf,
 				layer=100, fontSize=self.config.fontSize, bgColor=cl.Black:with_alpha(0.5)

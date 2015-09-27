@@ -9,7 +9,7 @@ function Elem:init( owner, ...) -- x,y,w,h[,font,fontSize,contextMenu,bgColor]
 	self.dead = false
 	owner:registerElem(self)
 	self.owner = owner
-	self.config = _.m({x=0,y=0,w=100,h=100,pnl=owner.pnl,color=tweak_data.screen_colors.button_stage_3}, ...)
+	self.config = _.m({x=0,y=0,w=100,h=100,pnl=owner.pnl,color=tweak_data.screen_colors.button_stage_3,layer=1}, ...)
 	self.ppnl = self.config.pnl
 	self.pnl = self.ppnl:panel(self.config)
 	self.extraPnls = {}
@@ -24,6 +24,35 @@ function Elem:init( owner, ...) -- x,y,w,h[,font,fontSize,contextMenu,bgColor]
 	self:_bakeMouseQuery('Click')
 	self:_bakeMouseQuery('DblClick')
 	self.name = 'BaseElem'
+end
+
+function Elem:size()
+	if not self.dead then
+		return self.pnl:size()
+	end
+	return 0, 0
+end
+
+function Elem:setSize(w,h)
+	if not self.dead then
+		if type(w) == 'number' then
+			self.pnl:set_w(w)
+		end
+		if type(h) == 'number' then
+			self.pnl:set_h(h)
+		end
+	end
+end
+
+function Elem:setPosition(x,y)
+	if not self.dead then
+		if type(x) == 'number' then
+			self.pnl:set_x(x)
+		end
+		if type(y) == 'number' then
+			self.pnl:set_y(y)
+		end
+	end
 end
 
 function Elem:setAlpha(alpha)
@@ -98,15 +127,21 @@ function Elem:enable()
 	return self
 end
 
-function Elem:triggerElems(...)
-	for __, elem in ipairs(self.elems) do
-		elem:trigger(...)
+function Elem:triggerElems( event, ...)
+	for __, elem in ipairs(self.elems or {}) do
+		elem:trigger(event, ...)
+		if event == 'leave' then
+			elem.isInside = nil
+		end
 	end
 	return self
 end
 
 function Elem:trigger(event, ...)
 	event = event:lower()
+	if event == 'click' and now() - (self._pressed or 0) > 0.1 then
+		return -- drag out to cancel click
+	end
 	if not self.dead and self.listeners[event] then
 		local results = {}
 		for key,listener in pairs(self.listeners[event]) do
@@ -194,6 +229,7 @@ function Elem:queryMouseMove( x, y )
 	else
 		if self.isInside then
 			process( self:trigger('leave', x, y ) )
+			self:triggerElems('leave',x,y)
 		end
 	end
 	self.isInside = isInside
@@ -208,6 +244,15 @@ function Elem:_bakeMouseQuery( typeName, button, ... )
 			stop, sound = _stop, _sound or sound
 		end
 		if isInside then
+			if typeName == 'Press' then
+				self._pressed = button
+			elseif typeName == 'Release' then
+				if self._pressed == button then
+					self._pressed = now()
+				else
+					self._pressed = nil
+				end
+			end
 			for k,elem in ipairs(self.elems or {}) do
 				if not (stop or elem.disabled or elem.dead) then
 					process( elem['queryMouse'..typeName]( elem, button, ... ) )

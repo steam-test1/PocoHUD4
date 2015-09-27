@@ -15,14 +15,15 @@ function Listbox:init(...) -- x,y,w,h[,font,fontSize] + items
 		local y = 0
 		for ind,itm in ipairs(conf.items) do
 			-- itm == {itmName, itmCallback}
+			local itmName, itmCallback = unpack(itm)
 			local btn = Button:new(self,{
-				x = 0, y = y, w = conf.w, h = itemHeight, text = itm[1], noBorder = true,
+				x = 0, y = y, w = conf.w - 20, h = itemHeight, text = itmName, noBorder = true,
 				fontSize = conf.fontSize
 			})
-			if itm[2] then
+			if itmCallback then -- itmCallback
 				btn:on('click',function(b,...)
 					if b==0 then
-						itm[2]()
+						itmCallback(b, ...)
 						self:getRoot():setTaunt()
 						return true, 'prompt_exit'
 					end

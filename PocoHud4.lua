@@ -16,7 +16,7 @@ PocoMods.savePath = rawget(_G,'SavePath') or currModPath
 PocoMods.currModPath = currModPath
 
 PocoMods.moduleBegin = function()
-    local __,__,parent,name = string.find(debug.getinfo(2).source:lower(), '/(%a+)/([%d%a\-]+).lua')
+    local __,__,parent,name = string.find(debug.getinfo(2,'S').source:lower(), '/(%a+)/([%d%a\-]+).lua')
     name = ( parent=='lua' and '' or parent .. '/' ) .. name
     local shell = setmetatable({},{__index=_G})
     shell._name = name

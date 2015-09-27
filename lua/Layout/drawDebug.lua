@@ -7,24 +7,33 @@ local Button = ROOT.import('Components/Button')
 local ListBox = ROOT.import('Components/ListBox')
 
 local function drawFunc (UI)
-	local TopBox = Box:new(UI, {x=100,y=100+math.random(0,100),w=600,h=200,scroll=true,bgColor=cl.Black:with_alpha(0.5)})
+	local TopBox = Box:new(UI, {x=100,y=100+math.random(0,100),w=600,h=200,scroll=not true,bgColor=cl.Black:with_alpha(0.5)})
 	TopBox:on('DblClick',function(b)
 		if b == 1 then
 			ROOT:Menu()
 		end
 	end)
 	--ListBox:new(TopBox,{x=100,y=10,scroll=true,items={{'123',function() _(123) end}, {'456',function() _(456) end}},noBorder=true})
-	local cd = currModFolder
-	Button:new(TopBox, {text=cd, x=200,w=400})
+	local cd = ROOT.currModPath --debug.getinfo(6, "S").source
+	Button:new(TopBox, {text=cd, x=200,w=300}):on('click',function() _.c('Test',now()) return true end)
 
 	local files = {}
-	--[=[]=] for dir in io.popen([[dir /b /ad]]):lines() do
+	local fileHandle = io.popen('dir /b /a-d')
+	--[=[]=] for dir in fileHandle:lines() do
 		table.insert(files,{dir,function() _('Clicked',dir) end})
 	end --]=]
 	Button:new(TopBox, {
-		x=10,y=10,w=60,h=60,text='OpenContext',fontSize=20,hColor=cl.Red,
+		x=10,y=10,w=60,h=20,text='OpenContext',fontSize=20,hColor=cl.Red,
 		contextMenu=files
 	})
+
+	--[[
+	Button:new(TopBox, {
+		x=10,y=1410,w=60,h=70,text='OpenContext',fontSize=20,hColor=cl.Blue,
+		contextMenu=files
+	})
+]]
+	TopBox:autoSize()
 
 	do return TopBox end
 
