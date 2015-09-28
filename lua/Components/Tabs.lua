@@ -48,7 +48,7 @@ function Tabs:goto(name)
 end
 
 function Tabs:addSection(name)
-	Button:new(self.leftBox, _.m({color=cl.White,text=name,y=self.tabTop+5,noBorder=true}, self.leftBtnConf) )
+	Button:new(self.leftBox, _.m({color=cl.Silver,hColor=cl.Silver,text=name,y=self.tabTop+5,noBorder=true}, self.leftBtnConf) )
 	self.tabTop = self.tabTop + self.leftBtnConf.h
 	self.leftBox:autoSize()
 end

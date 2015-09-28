@@ -35,25 +35,11 @@ function Option:default(category)
 end
 
 function Option:load()
-	local f,err = io.open(JSONFileName, 'r')
-	local result = false
-	if f then
-		local t = f:read('*all')
-		local o = _.j:decode(t)
-		if type(o) == 'table' then
-			self.items = o
-		end
-		f:close()
-	end
+	self.items = _.j:fromFile(JSONFileName)
 end
 
 function Option:save()
-	local f = io.open(JSONFileName, 'w')
-	if f then
-		_('O:Save:',JSONFileName)
-		f:write(_.j:encode_pretty(self.items))
-		f:close()
-	end
+	_.j:toFile(self.items,JSONFileName,true)
 end
 
 

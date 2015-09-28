@@ -165,7 +165,7 @@ function PocoMods:Menu(drawFunc)
     self._menuElem = self.UI:draw(drawFunc)
     managers.menu_component:post_event('menu_enter')
   else
-    if self._menuElem then
+    if self._menuElem and ( not self._stringFocused or (TimerManager:game():time()-self._stringFocused > 0.1) ) then
       self.UI:setTaunt()
       self.UI:useMouse(false)
       self.UI:remove(self._menuElem)

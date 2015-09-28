@@ -3,7 +3,7 @@ local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common', ENV)
 local _defaultLocaleData = ROOT.import('Localizer-default')
 local Icon = ROOT.import('Icon')
-local O = ROOT.import('Config')()
+local O = ROOT.import('Options')()
 local Localizer = class()
 local JSONFileName = ROOT.currModPath .. 'lua/Locales/$.json'
 

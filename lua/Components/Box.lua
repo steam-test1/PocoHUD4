@@ -44,10 +44,10 @@ function Box:init( ... ) -- x,y,w,h[,font,fontSize] + [noBorder]
 		self.pnl = self.pnl:panel(_.m({},self.config,{x=0, y=0, w=self.config.w-20, layer=1}))
 		self
 			:on('press',function(btn, x, y)
-				if btn == 'mouse wheel down' then
+				if btn == 'mouse wheel down' and self.outerPnl:visible() then
 					return true, self:scrollBy(-scrollAmount) and 'selection_next' or ''
 				end
-				if btn == 'mouse wheel up' then
+				if btn == 'mouse wheel up' and self.outerPnl:visible() then
 					return true, self:scrollBy(scrollAmount) and 'selection_previous' or ''
 				end
 			end, 999999)
@@ -59,12 +59,23 @@ end
 
 function Box:checkGripPos()
 	local sb = self.scrollBar
-	local a =  self.__scrollY or 0
+	local a =  self.__scrollY or -1
 	local t =  self.__scrollYTarget or 0
 	if sb and a ~= t then
 		self.__scrollY = math.round( a + (t-a)/scrollFriction)
 		if math.abs(t - self.__scrollY) > 0.5 then
 			self.pnl:set_y( self.__scrollY )
+
+			if self.scrollBar then
+				local sb,sbR = self.scrollBar, self.scrollBarRect
+				local iY, iH, oH, h = self.pnl:y(), self.pnl:h(), self.outerPnl:h(), self.config.h - 10
+				local sH = math.round( math.max( math.min(h, h * oH / iH), 10) )
+				local y = math.round( math.min(h - 10 , math.max(5, 5 + (-iY / (iH-oH)) * (h-sH)) ) )
+				sb:set_h(sH)
+				sbR:set_h(sH)
+				sb:set_y(y)
+				-- sb:rect{color=cl.White}
+			end
 		else
 			self.__scrollY = t
 		end
@@ -73,12 +84,12 @@ end
 
 function Box:checkGripAlpha()
 	local sb = self.scrollBar
-	local a =  self.__gripAlpha or 0
-	local t =  self.__gripAlphaTarget or 0.1
+	local a =  self.__gripAlpha or -1
+	local t =  self.__gripAlphaTarget or (self.pnl:h() > self.config.h and 0.15 or 0)
 	if sb and a ~= t then
-		self.__gripAlpha = a + (t-a)/20
+		self.__gripAlpha = a + (t-a)/10
 		if math.abs(t - self.__gripAlpha) > 0.01 then
-			sb:set_alpha( self.__gripAlpha )
+			sb:set_alpha( math.max(0, self.__gripAlpha) )
 		else
 			self.__gripAlpha = t
 		end
@@ -134,26 +145,16 @@ function Box:updateElems()
 				local x,y,w,h = elem.pnl:shape()
 				local yy = y + py + h/2
 				if yy <= 0  or yy > oh then
-					elem:setAlpha(0)
+					elem:set_alpha(0)
 				elseif yy < pad then
-					elem:setAlpha(0.5 + (yy / pad)/2)
+					elem:set_alpha(0.5 + (yy / pad)/2)
 				elseif yy > oh - pad then
-					elem:setAlpha(0.5 + ((oh - yy) / pad)/2)
+					elem:set_alpha(0.5 + ((oh - yy) / pad)/2)
 				else
-					elem:setAlpha(1)
+					elem:set_alpha(1)
 				end
 			end
 		end
-	end
-	if self.scrollBar then
-		local sb,sbR = self.scrollBar, self.scrollBarRect
-		local iY, iH, oH, h = self.pnl:y(), self.pnl:h(), self.outerPnl:h(), self.config.h - 10
-		local sH = math.round( math.max( math.min(h, h * oH / iH), 10) )
-		local y = math.round( math.min(h - 10 , math.max(5, 5 + (-iY / (iH-oH)) * (h-sH)) ) )
-		sb:set_h(sH)
-		sbR:set_h(sH)
-		sb:set_y(y)
-		-- sb:rect{color=cl.White}
 	end
 end
 
@@ -179,12 +180,13 @@ function Box:autoSize(padding)
 		padding = 0
 	end
 	local ww,hh = self.config.w, self.config.h
-	for __, elem in ipairs(self.elems) do
-		local x,y,w,h = elem.pnl:shape()
+	for __, elem in ipairs(self.pnl:children()) do
+		local x,y,w,h = elem:shape()
 		ww = math.max(x+w, ww)
-		hh = math.max(y+h, hh)
+		hh = math.max(y+h + padding, hh)
 	end
-	self.pnl:set_size(self.pnl:w(),hh)
+	self.pnl:set_size(self.pnl:w(),math.ceil(hh))
+	self.__scrollY = nil
 	self:updateElems()
 end
 

@@ -18,5 +18,20 @@ end)
 O:load()
 O:save()
 
+local keybinds = _.j:fromFile(ROOT.savePath..'mod_keybinds.txt')
+if keybinds and not keybinds.pocohud4_open then
+  keybinds.pocohud4_open = "backspace"
+  _.j:toFile(keybinds, ROOT.savePath..'mod_keybinds.txt')
+  local dialog_data = {}
+  dialog_data.title = string.upper( 'PocoHud4 Keybind inserted' )
+  dialog_data.text = [=[Press Backspace after the next session to open PocoHud4 config menu.
+  You can customize this in [Options]-[MOD Keybinds].]=]
+  local ok_button = {}
+  ok_button.text = managers.localization:text("dialog_ok")
+  dialog_data.button_list = {ok_button}
+  managers.system_menu:show(dialog_data)
+  me:Menu(true,true)
+
+end
 
 PocoHud4.moduleEnd()

@@ -132,7 +132,16 @@ _ = {
     end
     if lbl then
       if type(lbl) ~= 'userdata' then
-        local obj = _.m({font='fonts/font_medium_mf',font_size=lbl.fontSize or 15},lbl)
+        local obj = _.m({font_size=lbl.fontSize or 15},lbl)
+        if not obj.font then
+          if obj.font_size < 20 then
+            obj.font = 'fonts/font_small_mf'
+          elseif obj.font_size < 25 then
+            obj.font = 'fonts/font_medium_mf'
+          else
+            obj.font = 'fonts/font_large_mf'
+          end
+        end
         lbl = obj.pnl:text(obj)
       end
       if alive(lbl) then
@@ -206,6 +215,10 @@ _ = {
   B = function(obj, functionName, ...) -- bind
     if obj and obj[functionName] then
       return callback( obj, obj, functionName, ...)
+    elseif not obj and type(functionName) == 'function' then
+      return function(...)
+        return functionName(...)
+      end
     end
   end,
   J = ROOT.import('Util/Json'),
@@ -227,6 +240,29 @@ _ = {
     return copy
   end
 }
+function _.J:fromFile(filename)
+  local f,err = io.open(filename, 'r')
+	if f then
+		local t = f:read('*all')
+		local o = _.j:decode(t)
+		if type(o) == 'table' then
+			return o
+		end
+		f:close()
+  else
+    _('JSON:fromFile failed',filename)
+	end
+end
+function _.J:toFile(obj, filename)
+  local f = io.open(filename, 'w')
+	if f then
+  	f:write(_.j:encode_pretty(obj))
+		f:close()
+  else
+    _('JSON:toFile failed',filename)
+	end
+end
+
 for k,v in pairs(_.SC(_)) do
   _[k:lower()] = v
 end

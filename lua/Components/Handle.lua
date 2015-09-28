@@ -11,6 +11,16 @@ function Handle:init(...)
 			self.config.text or '', false
 		)
 	end
+	if not self.config.noBorder then
+		self._border = BoxGuiObject:new(self.pnl, {
+			sides = {
+				2,
+				2,
+				1,
+				1
+			}
+		})
+	end
 	local target = self.owner
 	target:on('press',function(b,x,y)
 		if b == 0 and self:inside(x,y) then

@@ -24,8 +24,57 @@ function Elem:init( owner, ...) -- x,y,w,h[,font,fontSize,contextMenu,bgColor]
 	self:_bakeMouseQuery('Click')
 	self:_bakeMouseQuery('DblClick')
 	self.name = 'BaseElem'
+
+	if self.config.hintText then
+		self:installHint()
+	end
 end
 
+function Elem:sound(snd)
+	managers.menu_component:post_event(snd)
+end
+
+function Elem:installHint()
+	local config = self.config
+	local hintPnl
+	local rootPnl = self:getRoot().pnl
+
+	local _reposition = function(x,y)
+		if hintPnl then
+			x = math.max(0,math.min(rootPnl:w()-hintPnl:w(),x+10))
+			y = math.max(rootPnl:world_y(),math.min((rootPnl:h() or 0)-20-hintPnl:h(),y))
+			hintPnl:set_world_position(x,y+20)
+		end
+	end
+	local _buildOne = function(x,y)
+		hintPnl = rootPnl:panel{
+			x = 0, y = 0, w = 800, h = 200, layer=2000
+		}
+		local __, hintLbl = _.l({
+			pnl = hintPnl,x=5, y=5, font = config.hintFont, font_size = config.hintFontSize or 18, color = config.hintFontColor or cl.White,
+			align = config.align, vertical = config.vAlign, layer = 2, rotation = 360
+		},config.hintText or '',true)
+		hintPnl:set_size(hintLbl:size())
+		hintPnl:grow(10,10)
+		hintPnl:rect{ color = cl.Black:with_alpha(0.7), layer = 1, rotation = 360}
+		_reposition(x,y)
+	end
+	self:on('enter', function(x,y)
+		if not hintPnl then
+			_buildOne(x,y)
+		end
+	end):on('leave', function(x,y)
+		if hintPnl then
+			if alive(hintPnl) then
+				rootPnl:remove(hintPnl)
+			end
+			hintPnl = nil
+		end
+	end):on('move', function(x,y)
+		_reposition(x,y)
+	end)
+
+end
 function Elem:size()
 	if not self.dead then
 		return self.pnl:size()
@@ -33,7 +82,7 @@ function Elem:size()
 	return 0, 0
 end
 
-function Elem:setSize(w,h)
+function Elem:set_size(w,h)
 	if not self.dead then
 		if type(w) == 'number' then
 			self.pnl:set_w(w)
@@ -44,7 +93,7 @@ function Elem:setSize(w,h)
 	end
 end
 
-function Elem:setPosition(x,y)
+function Elem:set_position(x,y)
 	if not self.dead then
 		if type(x) == 'number' then
 			self.pnl:set_x(x)
@@ -55,7 +104,34 @@ function Elem:setPosition(x,y)
 	end
 end
 
-function Elem:setAlpha(alpha)
+function Elem:set_y(y)
+	if self.outerPnl then
+		self.outerPnl:set_y(y)
+	else
+		self.pnl:set_y(y)
+	end
+	return self
+end
+
+function Elem:set_center_x(y)
+	if self.outerPnl then
+		self.outerPnl:set_center_x(y)
+	else
+		self.pnl:set_center_x(y)
+	end
+	return self
+end
+
+function Elem:set_x(y)
+	if self.outerPnl then
+		self.outerPnl:set_x(y)
+	else
+		self.pnl:set_x(y)
+	end
+	return self
+end
+
+function Elem:set_alpha(alpha)
 	local la = self._lastAlpha
 	if la ~= alpha then
 		self.pnl:set_alpha(alpha)
@@ -169,18 +245,16 @@ end
 function Elem:hide()
 	if self.outerPnl then
 		self.outerPnl:set_visible(false)
-	else
-		self.pnl:set_visible(false)
 	end
+	self.pnl:set_visible(false)
 	return self
 end
 
 function Elem:show()
 	if self.outerPnl then
 		self.outerPnl:set_visible(true)
-	else
-		self.pnl:set_visible(true)
 	end
+	self.pnl:set_visible(true)
 	return self
 end
 
@@ -193,6 +267,7 @@ end
 
 function Elem:destroy()
 	if self.dead then return end
+	self:trigger('leave',0,0)
 	self.dead = true
 	self:clear()
 	self.owner = nil

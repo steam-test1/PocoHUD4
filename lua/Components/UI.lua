@@ -110,6 +110,10 @@ function UI:queryMouseMove(o, ... ) -- x, y
 	local tauntElem, stop, cursor, sound = self.tauntElem
 	local process = function(_stop, _sound, _cursor)
 		stop, sound, cursor = _stop, _sound or sound, _cursor or cursor
+		if not stop and sound then
+			managers.menu_component:post_event( sound )
+			sound = nil
+		end
 	end
 	if tauntElem then
 		process( tauntElem:queryMouseMove( ... ) )
