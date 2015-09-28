@@ -15,5 +15,8 @@ Hook(_G.MenuInput):header('update',function()
   end
 end)
 
+O:load()
+O:save()
+
 
 PocoHud4.moduleEnd()

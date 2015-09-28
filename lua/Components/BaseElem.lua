@@ -4,7 +4,7 @@ local Elem = class()
 
 function Elem:init( owner, ...) -- x,y,w,h[,font,fontSize,contextMenu,bgColor]
 	if not owner.registerElem then
-		_('No Owner',debug.traceback())
+		_('>>>No Owner',debug.traceback(),'\n','<<<No Owner',self.name)
 	end
 	self.dead = false
 	owner:registerElem(self)
@@ -158,22 +158,43 @@ function Elem:trigger(event, ...)
 	end
 end
 
+function Elem:h()
+	return not self.dead and self.pnl:h() or 0
+end
+
+function Elem:w()
+	return not self.dead and self.pnl:w() or 0
+end
 
 function Elem:hide()
-	self.pnl:set_visible(false)
+	if self.outerPnl then
+		self.outerPnl:set_visible(false)
+	else
+		self.pnl:set_visible(false)
+	end
+	return self
 end
 
 function Elem:show()
-	self.pnl:set_visible(true)
+	if self.outerPnl then
+		self.outerPnl:set_visible(true)
+	else
+		self.pnl:set_visible(true)
+	end
+	return self
 end
 
+function Elem:clear()
+	for k,elem in ipairs(self.elems) do
+		elem:destroy()
+	end
+	self.elems = {}
+end
 
 function Elem:destroy()
 	if self.dead then return end
 	self.dead = true
-	for k,elem in ipairs(self.elems) do
-		elem:destroy()
-	end
+	self:clear()
 	self.owner = nil
 	self.elems = nil
 	self.extraPnls = nil

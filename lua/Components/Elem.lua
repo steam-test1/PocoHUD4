@@ -1,6 +1,6 @@
 local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common', ENV)
-local BaseElem = ROOT.import('Components/BaseElem', ENV)
+local BaseElem = ROOT.import('Components/BaseElem')
 local ContextElem = class(BaseElem)
 
 function ContextElem:init(...)

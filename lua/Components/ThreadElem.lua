@@ -7,7 +7,7 @@ local t = 0
 function ThreadElem:init(...)
 	ThreadElem.super.init(self, ...)
 	self.name = 'ThreadElem'
-	self.thread = self.pnl:animate(self._threadTick,self)	
+	self.thread = self.pnl:animate(self._threadTick,self)
 end
 
 function ThreadElem._threadTick(pnl, self)

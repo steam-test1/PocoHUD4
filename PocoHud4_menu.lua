@@ -3,7 +3,7 @@ if rawget(_G,'PocoHud4') then
   if PocoHud4._menuElem then
     PocoHud4:Menu(false)
   else
-    PocoHud4:Menu(PocoHud4.import('Layout/drawDebug'))
+    PocoHud4:Menu(PocoHud4.import('Layout/drawMain'))
   end
   -- @ debug state
 

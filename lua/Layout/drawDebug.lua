@@ -1,13 +1,16 @@
 local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common', ENV)
 local Hook = ROOT.import('Hook')
-local Elem = ROOT.import('Components/Elem')
+local BaseElem = ROOT.import('Components/BaseElem')
 local Box = ROOT.import('Components/Box')
+local Handle = ROOT.import('Components/Handle')
 local Button = ROOT.import('Components/Button')
 local ListBox = ROOT.import('Components/ListBox')
 
 local function drawFunc (UI)
-	local TopBox = Box:new(UI, {x=100,y=100+math.random(0,100),w=600,h=200,scroll=not true,bgColor=cl.Black:with_alpha(0.5)})
+	local RootElem = BaseElem:new(UI, {x=100,y=100+math.random(0,100),w=600,h=250})
+
+	local TopBox = Box:new(RootElem, {x=0,y=30,w=600,h=200,scroll=true,bgColor=cl.Black:with_alpha(0.5)})
 	TopBox:on('DblClick',function(b)
 		if b == 1 then
 			ROOT:Menu()
@@ -15,7 +18,10 @@ local function drawFunc (UI)
 	end)
 	--ListBox:new(TopBox,{x=100,y=10,scroll=true,items={{'123',function() _(123) end}, {'456',function() _(456) end}},noBorder=true})
 	local cd = ROOT.currModPath --debug.getinfo(6, "S").source
-	Button:new(TopBox, {text=cd, x=200,w=300}):on('click',function() _.c('Test',now()) return true end)
+	Handle:new(RootElem, {text='Handle', x=20,w=100,h=30})
+
+	local testBtn = Button:new(TopBox, {text=cd, x=200,w=300}):on('click',function() _.c('Test',now()) return true end)
+	Handle:new(testBtn, {text='Handle', x=20,w=50,h=30})
 
 	local files = {}
 	local fileHandle = io.popen('dir /b /a-d')
@@ -23,7 +29,7 @@ local function drawFunc (UI)
 		table.insert(files,{dir,function() _('Clicked',dir) end})
 	end --]=]
 	Button:new(TopBox, {
-		x=10,y=10,w=60,h=20,text='OpenContext',fontSize=20,hColor=cl.Red,
+		x=10,y=210,w=60,h=20,text='OpenContext',fontSize=20,hColor=cl.Red,
 		contextMenu=files
 	})
 

@@ -27,6 +27,7 @@ _ = {
   F = function (n,k) -- formatfloat
     k = k or 2
     if type(n) == 'number' then
+      do return tostring(n) end
       local r = string.format('%.'..k..'g', n)--:sub(1,k+2)
       return r:find('e') and tostring(math.floor(n)) or r
     elseif type(n) == 'table' then
