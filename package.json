@@ -1,6 +1,6 @@
 {
   "name": "pocohud4",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "PocoHud4 for Payday2",
   "main": "PocoHud4.lua",
   "scripts": {
