@@ -3,7 +3,7 @@
   "description": "Hud enhancer for who fancy realtime info",
   "author": "Zenyr",
   "contact": "zenyr@zenyr.com",
-  "version": "v4.0.5",
+  "version": "v4.0.6",
   "priority": 420,
   "persist_scripts": [
     {
