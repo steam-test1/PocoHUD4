@@ -1,6 +1,6 @@
 {
   "name": "pocohud4",
-  "version": "4.0.4",
+  "version": "4.0.5",
   "description": "PocoHud4 for Payday2",
   "main": "PocoHud4.lua",
   "scripts": {
@@ -8,5 +8,9 @@
     "postversion": "REM git push && REM git push --tags"
   },
   "author": "Zenyr",
-  "license": "WTFPL 2.0"
+  "license": "WTFPL 2.0",
+  "versionDetail": {
+    "gitRev": "16",
+    "gitDescribe": "v4.0.5"
+  }
 }
