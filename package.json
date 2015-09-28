@@ -1,16 +1,16 @@
 {
   "name": "pocohud4",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "PocoHud4 for Payday2",
   "main": "PocoHud4.lua",
   "scripts": {
     "test": "echo \"N/A\"",
-    "postversion": "babel-node build/postversion.js && REM git push && REM git push --tags"
+    "postversion": "babel-node build/postversion.js && git push && git push --tags"
   },
   "author": "Zenyr",
   "license": "WTFPL 2.0",
   "preversion": {
-    "gitRev": "15",
-    "gitDescribe": "v4.0.1"
+    "gitRev": "16",
+    "gitDescribe": "v4.0.2"
   }
 }
