@@ -1,6 +1,6 @@
 {
   "name": "pocohud4",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "PocoHud4 for Payday2",
   "main": "PocoHud4.lua",
   "scripts": {
@@ -10,7 +10,7 @@
   "author": "Zenyr",
   "license": "WTFPL 2.0",
   "preversion": {
-    "gitRev": "13",
-    "gitDescribe": "4.0.0-alpha-12-g3e45e25"
+    "gitRev": "15",
+    "gitDescribe": "v4.0.1"
   }
 }
