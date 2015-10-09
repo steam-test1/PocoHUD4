@@ -43,7 +43,12 @@ export = function ( Tabs )
 	ENV.Button:new(currBox, {x=210,y=5,w=100,h=50,text='@Zenyr',fontSize=20,color=cl.OrangeRed,hColor=cl.Orange})
 		:on('click',openCbk('https://twitter.com/zenyr') )
 
-	ENV.Button:new(currBox, {x=5,y=00+math.random()*100,text='1234'}):on('click',function() _('Clicked 1234') end)
+	ENV.Button:new(currBox, {x=5,y=100+math.random()*100,h=200,text=_.s(
+		_.f(123.456789,2),'\n',
+		_.f(123.0010,5),'\n',
+		_.f(123.05000,1),'\n',
+		''
+	) }):on('click',function() _('Clicked 1234') end)
 	currBox:autoSize()
 	Tabs:goto('About')
 end

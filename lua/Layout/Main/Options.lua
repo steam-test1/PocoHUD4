@@ -15,39 +15,50 @@ export = function ( Tabs, BottomBox )
 	-- buttons
 
 	ENV.Button:new(BottomBox,{
-		onClick = function()
-			dofile('../../PocoHud4_reload.lua')
-		end,
 		x = 10, y = 10, w = 400, h=30, fontSize = 20,
 		text={L('_btn_apply_and_reload'),cl.SteelBlue},
 		hintText = L('_desc_apply_and_reload')
-	})
+	}):on('click',function(b)
+		if b ~=0 then return end
+		O:default()
+		for __,obj in pairs(objs) do
+			if not obj[1]:isDefault() then
+				O:set(obj[2],obj[3],obj[1]:val())
+			end
+		end
+		O:save()
+		ROOT.unload()
+		rawset(_G,'PocoHud4',nil)
+		return true
+ 	end)
 
 	ENV.Button:new(BottomBox,{
-		onClick = function()
-			for __,obj in pairs(objs) do
-				obj[1]:val(O:get(obj[2],obj[3],true))
-			end
-		end,
 		x = 410, y = 10, w = 200, h=30, fontSize = 18,
 		text={L('_btn_discard'),cl.Gray},
 		hintText = L('_desc_discard')
-	})
+	}):on('click',function(b)
+		if b ~= 0 then return end
+		for __,obj in pairs(objs) do
+			obj[1]:val(O:get(obj[2],obj[3],true))
+		end
+		return true
+	end)
 	ENV.Button:new(BottomBox,{
-		onClick = function()
-			managers.menu:show_default_option_dialog({
-				text =  L('_desc_reset')..'\n'..L('_desc_reset_ask'),
-				callback = function()
-					for __,obj in pairs(objs) do
-						obj[1]:val(O:_default(obj[2],obj[3]))
-					end
-				end
-			})
-		end,
 		x = 610, y = 10, w = 180, h=30, fontSize = 18,
 		text={L('_btn_reset'),cl.Gray},
 		hintText = L('_desc_reset')
-	})
+	}):on('click',function(b)
+		if b ~= 0 then return end
+		managers.menu:show_default_option_dialog({
+			text =  L('_desc_reset')..'\n'..L('_desc_reset_ask'),
+			callback = function()
+				for __,obj in pairs(objs) do
+					obj[1]:val(O:_default(obj[2],obj[3]))
+				end
+			end
+		})
+		return true
+	end)
 
 	for category, objects in _.p(O.scheme, prioritize) do
 		local box = Tabs:addTab(L('_tab_'..category))

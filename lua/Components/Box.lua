@@ -3,7 +3,7 @@ local _ = ROOT.import('Common', ENV)
 local ThreadElem = ROOT.import('Components/ThreadElem')
 local Button = ROOT.import('Components/Button')
 local Box = class(ThreadElem)
-local scrollAmount, scrollFriction = 60, 3
+local scrollAmount, scrollFriction = 100, 3
 local normalW, highlightW = 5, 8
 
 function Box:init( ... ) -- x,y,w,h[,font,fontSize] + [noBorder]

@@ -179,5 +179,4 @@ end
 
 PocoHud4 = setmetatable(PocoMods,{__index=modules})
 PocoHud4.UI = PocoHud4.import('Components/UI'):new()
-log('--'..PocoHud4._INSTANCE..' PH4 Loaded on '.._VERSION..' --')
 PocoMods.import('Entry')

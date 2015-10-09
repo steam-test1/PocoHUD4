@@ -1,7 +1,7 @@
 -- PocoHud4 Config manager
 local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common', ENV)
-local _defaultLocaleData = ROOT.import('Localizer-default')
+local _defaultLocaleData = ROOT.import('Defaults/Localizer')
 local Icon = ROOT.import('Icon')
 local O = ROOT.import('Options')()
 local Localizer = class()

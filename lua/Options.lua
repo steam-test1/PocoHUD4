@@ -1,8 +1,8 @@
 -- PocoHud4 Config manager
 local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common',ENV)
-local scheme = ROOT.import('Config-default')
-local _vanity = ROOT.import('Config-keywords')
+local scheme = ROOT.import('Defaults/Config')
+local _vanity = ROOT.import('Defaults/Config-keywords')
 local isNil = function(a)
 	return a == nil
 end
