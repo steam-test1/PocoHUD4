@@ -1,6 +1,6 @@
 local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common', ENV)
-local Value = ROOT.import('Components/Value')
+local Value = ROOT.import('Components/Value/Index')
 
 local ValueChoose = class(Value)
 

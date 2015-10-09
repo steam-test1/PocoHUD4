@@ -1,12 +1,14 @@
 local ENV = PocoHud4.moduleBegin()
 local ModuleBase = class()
 
-function ModuleBase:init()
+function ModuleBase:init(owner)
+	self.owner = owner
+	self.ppnl = owner.pnl
 	self.category = 'UNKNOWN'
 	self.id = 'Base'
-	self.C = {}
 	self.aliveThunk = function() return not self.dead end
 
+	self.C = {}
 	self.O = ROOT.import('Options')()
 	self.L = ROOT.import('Localizer')()
 

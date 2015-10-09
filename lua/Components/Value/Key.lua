@@ -1,6 +1,6 @@
 local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common', ENV)
-local ValueChoose = ROOT.import('Components/ValueChoose')
+local ValueChoose = ROOT.import('Components/Value/Choose')
 
 local ValueKey = class(ValueChoose)
 function ValueKey:init(parent,config)
