@@ -102,7 +102,7 @@ function Option:get(category,name,raw)
 			return cl[result] or cl.White
 		end
 	end
-	return result
+	return _.m({},result)
 end
 
 function Option:getCategory(category,raw)

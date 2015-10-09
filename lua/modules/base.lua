@@ -4,8 +4,12 @@ local ModuleBase = class()
 function ModuleBase:init()
 	self.category = 'UNKNOWN'
 	self.id = 'Base'
-	self.config = {}
+	self.C = {}
 	self.aliveThunk = function() return not self.dead end
+
+	self.O = ROOT.import('Options')()
+	self.L = ROOT.import('Localizer')()
+
 	self:postInit()
 end
 
