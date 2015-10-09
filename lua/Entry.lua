@@ -16,7 +16,7 @@ end)
 
 local keybinds = _.j:fromFile(ROOT.savePath..'mod_keybinds.txt')
 if keybinds and not keybinds.pocohud4_open then
-  keybinds.pocohud4_open = "backspace"
+  keybinds.pocohud4_open = 'backspace'
   _.j:toFile(keybinds, ROOT.savePath..'mod_keybinds.txt')
   local dialog_data = {}
   dialog_data.title = string.upper( 'PocoHud4 Keybind inserted' )

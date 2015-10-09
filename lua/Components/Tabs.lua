@@ -45,6 +45,10 @@ function Tabs:goto(name)
 		self.currentTab:hide()
 	end
 	self.currentTab = self.tabs[name]:show()
+	local sT = self.currentTab
+	if math.abs(sT.__scrollY or 0) > 2 then
+		sT:scrollTo(0)
+	end
 end
 
 function Tabs:addSection(name)

@@ -4,6 +4,7 @@ local ThreadElem = ROOT.import('Components/ThreadElem')
 local Button = ROOT.import('Components/Button')
 local Box = class(ThreadElem)
 local scrollAmount, scrollFriction = 60, 3
+local normalW, highlightW = 5, 8
 
 function Box:init( ... ) -- x,y,w,h[,font,fontSize] + [noBorder]
 	Box.super.init(self, ...)
@@ -32,16 +33,14 @@ function Box:init( ... ) -- x,y,w,h[,font,fontSize] + [noBorder]
 
 	if self.config.scroll then
 		self.outerPnl = self.pnl
-		self.scrollBar = self.pnl:panel{x=self.config.w - 15, y=5,w=10,h=self.config.h-10,layer=1}
+		self.scrollBar = self.pnl:panel{x=self.config.w - 5 - normalW, y=5, w=normalW ,h=self.config.h-10,layer=1}
 		self.scrollBarRect = self.scrollBar:rect{color=cl.White,w=10,h=self.config.h}
-		-- self.scrollBar = Button:new(self, {x=self.config.w - 15, y=5,w=10,h=self.config.h-10,
-		-- 	noBorder=true,bgColor=cl.White:with_alpha(0.5)})
 		self:on('move',_.b(self,'checkGripMove'))
 			:on('press',_.b(self,'checkGripPress'))
 			:on('release',_.b(self,'checkGripRelease'))
 			:on('leave',_.b(self,'gripLeave'))
 		table.insert(self.extraPnls, self.outerPnl)
-		self.pnl = self.pnl:panel(_.m({},self.config,{x=0, y=0, w=self.config.w-20, layer=1}))
+		self.pnl = self.pnl:panel(_.m({},self.config,{x=0, y=0, w=self.config.w-normalW, layer=1}))
 		self
 			:on('press',function(btn, x, y)
 				if btn == 'mouse wheel down' and self.outerPnl:visible() then
@@ -59,11 +58,11 @@ end
 
 function Box:checkGripPos()
 	local sb = self.scrollBar
-	local a =  self.__scrollY or -1
-	local t =  self.__scrollYTarget or 0
-	if sb and a ~= t then
-		self.__scrollY = math.round( a + (t-a)/scrollFriction)
-		if math.abs(t - self.__scrollY) > 0.5 then
+	local curr =  self.__scrollY or -1
+	local target =  self.__scrollYTarget or 0
+	if sb and curr ~= target then
+		self.__scrollY = math.round( curr + (target-curr)/scrollFriction)
+		if math.abs(target - self.__scrollY) > 0.5 then
 			self.pnl:set_y( self.__scrollY )
 
 			if self.scrollBar then
@@ -71,13 +70,15 @@ function Box:checkGripPos()
 				local iY, iH, oH, h = self.pnl:y(), self.pnl:h(), self.outerPnl:h(), self.config.h - 10
 				local sH = math.round( math.max( math.min(h, h * oH / iH), 10) )
 				local y = math.round( math.min(h - 10 , math.max(5, 5 + (-iY / (iH-oH)) * (h-sH)) ) )
-				sb:set_h(sH)
+				local sW = math.lerp(normalW, highlightW, self.__gripAlpha or 0)
+				local x = self.pnl:w() - sW
+				sb:set_size(sW,sH)
 				sbR:set_h(sH)
-				sb:set_y(y)
+				sb:set_position(x,y)
 				-- sb:rect{color=cl.White}
 			end
 		else
-			self.__scrollY = t
+			self.__scrollY = target
 		end
 	end
 end
@@ -132,7 +133,8 @@ function Box:gripLeave()
 end
 
 function Box:inside(x,y)
-	return (self.outerPnl and self.outerPnl:inside(x,y) or true) and ThreadElem.inside(self,x,y)
+	local isVisible = not self.outerPnl and true or self.outerPnl:inside(x,y)
+	return isVisible and Box.super.inside(self,x,y)
 end
 
 function Box:updateElems()
@@ -160,7 +162,7 @@ end
 
 function Box:scrollTo(y)
 	self.__scrollYTarget = y
-	self.__gripAlpha = 0.5
+	self.__gripAlpha = math.max(self.__gripAlpha or 0, 0.5)
 	self:updateElems()
 end
 function Box:scrollBy(delta)
