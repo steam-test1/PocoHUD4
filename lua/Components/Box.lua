@@ -127,7 +127,7 @@ function Box:gripLeave()
 	if self.grabbed then
 		self.grabbed = nil
 		self.grabY = nil
-		self.__gripAlphaTarget = 0.1
+		self.__gripAlphaTarget = nil
 	end
 end
 

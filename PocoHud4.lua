@@ -16,13 +16,13 @@ PocoMods.savePath = rawget(_G,'SavePath') or currModPath
 PocoMods.currModPath = currModPath
 
 PocoMods.moduleBegin = function()
-    local __,__,parent,name = string.find(debug.getinfo(2,'S').source:lower(), '/(%a+)/([%d%a\-]+).lua')
-    name = ( parent=='lua' and '' or parent .. '/' ) .. name
-    local shell = setmetatable({},{__index=_G})
-    shell._name = name
-    shell._modules = modules
-    shell.ROOT = PocoMods
-    local newEnv = modules[name] or setmetatable({},{__index=shell})
+    local org = debug.getinfo(2,'S').source:lower()
+    local name = org:gsub('.+/lua/',''):gsub('\.luac?','')
+    local moduleEnv = setmetatable({},{__index=_G})
+    moduleEnv._name = name
+    moduleEnv._modules = modules
+    moduleEnv.ROOT = PocoMods
+    local newEnv = modules[name] or setmetatable({},{__index=moduleEnv})
     modules[name] = newEnv
     setfenv(2,newEnv)
     return newEnv
