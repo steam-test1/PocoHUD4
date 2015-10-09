@@ -17,6 +17,10 @@ function ModuleBase:postInit()
 	-- Abstract
 end
 
+function ModuleBase:Update()
+	-- Abstract
+end
+
 function ModuleBase:preDestroy()
 	-- Abstract
 end

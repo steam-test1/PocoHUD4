@@ -10,6 +10,12 @@ function UI:init()
 	self.ppnl = self.ws:panel()
 	local w, h = self.ws:size()
 	self.pnl = self.ppnl:panel({ name = 'UI', x=0, y=0, w = w, h = h, layer = tweak_data.gui.MENU_LAYER})
+	self.dbgLbl = self.pnl:text{
+		text='HUD4 '..(ENV.inGame and 'Ingame' or 'Outgame'),
+		font = 'fonts/font_medium_mf', font_size = 15, color = cl.White:with_alpha(0.8),
+		x=0,y=0, layer=0
+	}
+
 	self.elems = {}
 
 	self:_bakeMouseQuery('Press')

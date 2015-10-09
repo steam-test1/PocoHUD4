@@ -5,7 +5,6 @@ local _ = ROOT.import('Common',ENV)
 local Hook = ROOT.import('Hook')
 local O = ROOT.import('Options')()
 
-
 _.c(ROOT._INSTANCE,_.s( 'PH4 Loaded') )
 
 Hook(_G.MenuManager):block('toggle_menu_state', function() return ROOT._menuElem end,_.b(ROOT,'Menu',false))
@@ -14,9 +13,6 @@ Hook(_G.MenuInput):header('update',function()
     managers.viewport:set_fullscreen(not RenderSettings.fullscreen)
   end
 end)
-
-O:load()
-O:save()
 
 local keybinds = _.j:fromFile(ROOT.savePath..'mod_keybinds.txt')
 if keybinds and not keybinds.pocohud4_open then
@@ -31,7 +27,6 @@ if keybinds and not keybinds.pocohud4_open then
   dialog_data.button_list = {ok_button}
   managers.system_menu:show(dialog_data)
   me:Menu(true,true)
-
 end
 
 PocoHud4.moduleEnd()
