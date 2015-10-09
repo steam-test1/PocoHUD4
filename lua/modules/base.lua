@@ -1,9 +1,8 @@
 local ENV = PocoHud4.moduleBegin()
 local ModuleBase = class()
 
-function ModuleBase:init(owner)
-	self.owner = owner
-	self.ppnl = owner.pnl
+function ModuleBase:init()
+	self.ppnl = ROOT.UI.pnl
 	self.category = 'UNKNOWN'
 	self.id = 'Base'
 	self.aliveThunk = function() return not self.dead end

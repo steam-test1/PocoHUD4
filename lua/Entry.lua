@@ -4,6 +4,7 @@ local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common',ENV)
 local Hook = ROOT.import('Hook')
 local O = ROOT.import('Options')()
+local Modules = ROOT.import('Modules/Index')
 
 _.c(ROOT._INSTANCE,_.s( 'PH4 Loaded') )
 

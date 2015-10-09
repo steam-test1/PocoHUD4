@@ -10,6 +10,11 @@ function Button:init(...) -- x,y,w,h[,font,fontSize] + [noBorder]
 	self:on('enter',function()
 		self.lbl:set_color(conf.hColor or tweak_data.screen_colors.button_stage_2)
 	end)
+	:on('move',function()
+		if not self.config.noCursor and self.listeners.click then
+			return false, false, 'link'
+		end
+	end)
 	:on('leave',function()
 		self.lbl:set_color(conf.color or tweak_data.screen_colors.button_stage_3)
 	end)

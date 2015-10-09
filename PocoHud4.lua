@@ -11,6 +11,10 @@ log = log or function( t ) io.stdout:write(tostring(t)..'\n') end
 local modules = {
   _INSTANCE = string.format('%06x', math.random()*0xffffff)
 }
+local payload = {}
+if rawget(_G, 'PocoMods') then
+  payload = PocoMods.payload
+end
 local PocoMods = {}
 PocoMods.savePath = rawget(_G,'SavePath') or currModPath
 PocoMods.currModPath = currModPath
@@ -72,6 +76,7 @@ PocoMods.unload = function()
   end
   PocoMods.active = false
 
+  -- TODO: Save payload to PocoMods.payload @ here
 end
 PocoMods.active = true
 function PocoMods:sanitizeKey(key)

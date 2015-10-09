@@ -37,6 +37,8 @@ function UI:init()
 	for k,v in ipairs(buttonStrings) do
 		self.buttonIDs[Idstring(v):key()] = v
 	end
+
+	self.__resolutionChangedHandle = managers.viewport:add_resolution_changed_func( callback( self, self, 'onResolutionChanged' ) )
 end
 
 function UI:visible()
@@ -81,6 +83,7 @@ end
 
 function UI:destroy()
 	self.dead = true
+	managers.viewport:remove_resolution_changed_func(self.__resolutionChangedHandle)
 	for k,elem in ipairs(self.elems) do
 		elem:destroy()
 	end
@@ -112,6 +115,7 @@ function UI:onCancel()
 	-- not implemented
 end
 
+local lastCursor
 function UI:queryMouseMove(o, ... ) -- x, y
 	local tauntElem, stop, cursor, sound = self.tauntElem
 	local process = function(_stop, _sound, _cursor)
@@ -130,8 +134,11 @@ function UI:queryMouseMove(o, ... ) -- x, y
 			end
 		end
 	end
-	if cursor then -- arrow, link, hand, grab
-		managers.mouse_pointer:set_pointer_image( cursor)
+	 -- arrow, link, hand, grab
+	cursor = cursor or 'arrow'
+	if lastCursor ~= cursor then
+		managers.mouse_pointer:set_pointer_image( cursor )
+		lastCursor = cursor
 	end
 	if sound then
 		--[[ menu_enter menu_exit highlight crime_net_startup zoom_in zoom_out
@@ -167,6 +174,14 @@ function UI:_bakeMouseQuery( typeName, ... )
 		if sound then
 			managers.menu_component:post_event( sound )
 		end
+	end
+end
+
+function UI:onResolutionChanged()
+	if alive(self.ws) then
+		managers.gui_data:layout_fullscreen_workspace( self.ws )
+	else
+		self:err('No WS to reschange')
 	end
 end
 

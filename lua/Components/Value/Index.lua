@@ -14,6 +14,8 @@ function Value:init(...)
 	self:on('enter', function()
 		bg:set_visible(true)
 		return false, 'slider_grab'
+	end):on('move', function()
+		return false, false, 'link'
 	end):on('leave', function()
 		bg:set_visible(false)
 	end)

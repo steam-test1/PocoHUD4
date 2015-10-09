@@ -11,15 +11,16 @@ export = function ( Tabs )
 
 	local host_list, level_list, job_list, mask_list, weapon_list = tweak_data.achievement.job_list, tweak_data.statistics:statistics_table()
 	local risks = { 'risk_pd', 'risk_swat', 'risk_fbi', 'risk_death_squad', 'risk_murder_squad'}
-	local x, y, tbl = 10, 10, {}
+	local x = 10
 	local font,fontSize = tweak_data.menu.pd2_small_font, tweak_data.menu.pd2_small_font_size*0.8
 
 	-- [1] Per Heist
-	do
-		local currBox = Tabs:addTab(L('_tab_stat_perheist'))
+	local drawPerHeist = function (currBox)
 		local pnl = currBox.pnl
+		local y = 10
 		local w, h, ww, hh = 0,0, pnl:size()
 		local _rowCnt = 0
+		local tbl = {}
 		tbl[#tbl+1] = {{L('_word_broker'),cl.BlanchedAlmond},L('_word_job'),'',{Icon.Skull,cl.PaleGreen:with_alpha(0.3)},{Icon.Skull,cl.PaleGoldenrod},{Icon.Skull..Icon.Skull,cl.LavenderBlush},{string.rep(Icon.Skull,3),cl.Wheat},{string.rep(Icon.Skull,4),cl.Tomato},L('_word_heat')}
 		local addJob = function(host,heist)
 			local jobData = tweak_data.narrative:job_data(heist)
@@ -78,14 +79,15 @@ export = function ( Tabs )
 		end
 		currBox:autoSize()
 	end
+	Tabs:addTab('perHeist',L('_tab_stat_perheist'), drawPerHeist)
+
 		-- [2] Per day
-	do
+	local drawPerDay = function (currBox)
 		level_list, job_list, mask_list, weapon_list = tweak_data.statistics:statistics_table()
-		local currBox = Tabs:addTab(L('_tab_stat_perday'))
 		local pnl = currBox.pnl
-		y = 10
+		local y = 10
 		local descs = {}
-		tbl = {}
+		local tbl = {}
 		tbl[#tbl+1] = {{L('_word_heist'),cl.BlanchedAlmond},{L('_word_day'),cl.Honeydew},'',{L('_word_started'),cl.LavenderBlush},{L('_word_completed'),cl.Wheat},L('_word_time')}
 		local levels = _.g('managers.statistics._global.sessions.levels') or {}
 		-- search JobsChain
@@ -195,5 +197,6 @@ export = function ( Tabs )
 		local __, lbl = _.l({color=cl.LightSteelBlue, alpha=0.9, font_size=fontSize, pnl = pnl, x = 10, y = y+10},L('_desc_heist_may_not_match'),true)
 		currBox:autoSize()
 	end
+	Tabs:addTab('perDay',L('_tab_stat_perday'), drawPerDay)
 end
 PocoHud4.moduleEnd()

@@ -154,7 +154,7 @@ end
 
 function Elem:clearCursor()
 	if self._cursorListener then
-		self:off('enter',self._cursorListener)
+		self:off('move',self._cursorListener)
 	end
 	return self
 end
@@ -219,18 +219,20 @@ function Elem:trigger(event, ...)
 		return -- drag out to cancel click
 	end
 	if not self.dead and self.listeners[event] then
-		local results = {}
+		local r = {}
 		for key,listener in pairs(self.listeners[event]) do
-			results = {pcall(listener, ...)}
-			if results[1] then
-				table.remove(results,1)
-				if results[1] then
-					return unpack(results)
+			local cR = {pcall(listener, ...)}
+			if cR[1] then
+				table.remove(cR,1)
+				r = {r[1] or cR[1], r[2] or cR[2], r[3] or cR[3]}
+				if r[1] then
+					break
 				end
 			else
 				_('[Elem:trigger] listener failed')
 			end
 		end
+		return unpack(r)
 	end
 end
 
@@ -306,9 +308,9 @@ end
 
 function Elem:queryMouseMove( x, y )
 	local isInside = self:inside( x, y )
-	local stop, sound, cursor
+	local stop, sound, cursor = false, false, false
 	local process = function(_stop, _sound, _cursor)
-		stop, sound, cursor = _stop, _sound or sound, _cursor or cursor
+		stop, sound, cursor = _stop or stop, _sound or sound, _cursor or cursor
 	end
 	if isInside then
 		if not self.isInside then
@@ -329,7 +331,7 @@ function Elem:queryMouseMove( x, y )
 		end
 	end
 	self.isInside = isInside
-	return stop, sound, cursor or (isInside and 'arrow')
+	return stop, sound, cursor -- or (isInside and 'arrow')
 end
 
 function Elem:_bakeMouseQuery( typeName, button, ... )

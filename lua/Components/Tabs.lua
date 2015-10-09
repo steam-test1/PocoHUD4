@@ -20,13 +20,17 @@ function Tabs:reset()
 	self.tabTop = 0
 	self.tabNames = {} -- table of name = button
 	self.tabs = {} -- table of name = box
+	self.lazyTabs = {}
 end
 
-function Tabs:addTab(name, text)
+function Tabs:addTab(name, text, lazyFn)
 	if self.tabs[name] then
 		return self.tabs[name]
 	end
 	local newBox = Box:new(self, self.rightBoxConf):hide()
+	if lazyFn then
+		self.lazyTabs[name] = lazyFn
+	end
 	self.tabs[name] = newBox
 	self.tabNames[name] =	Button:new(self.leftBox,_.m({text=text or name,y=self.tabTop+5,fontSize=18}, self.leftBtnConf) )
 		:on('click',function(b)
@@ -47,7 +51,15 @@ function Tabs:goto(name)
 		self.currentTabName.config.hColor=nil
 		self.currentTabName:trigger('leave')
 	end
+
 	self.currentTab = self.tabs[name]:show()
+	if not self.currentTab then
+		_('TabsErr: tab[',name,'] not available')
+	end
+	if self.lazyTabs[name] then
+		self.lazyTabs[name](self.currentTab)
+		self.lazyTabs[name] = nil
+	end
 	self.currentTabName = self.tabNames[name]
 	self.currentTabName.config.color=cl.Gold
 	self.currentTabName.config.hColor=cl.OrangeRed
