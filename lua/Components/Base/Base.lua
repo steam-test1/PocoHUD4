@@ -64,6 +64,8 @@ function Elem:installHint()
 			_buildOne(x,y)
 		end
 	end):on('leave', function(x,y)
+		self:trigger('hideHint')
+	end):on('hideHint', function(x,y)
 		if hintPnl then
 			if alive(hintPnl) then
 				rootPnl:remove(hintPnl)

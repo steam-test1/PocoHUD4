@@ -1,6 +1,6 @@
 local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common', ENV)
-local ThreadElem = ROOT.import('Components/ThreadElem')
+local ThreadElem = ROOT.import('Components/Base/Thread')
 local Button = ROOT.import('Components/Button')
 local Box = ROOT.import('Components/Box')
 local Tabs = class(ThreadElem)
@@ -14,8 +14,8 @@ end
 function Tabs:reset()
 	local conf = self.config
 	local m,tabW = conf.m or 10,conf.tabW
-	self.leftBox = Box:new(self, {x=m,y=m,w=tabW,h=conf.h-2*m,scroll=true,noBlur=true} )
-	self.leftBtnConf = {x=m,w=tabW-3*m,h=conf.tabH, noBorder=true}
+	self.leftBox = Box:new(self, {x=m,y=m,w=tabW,h=conf.h-2*m,scroll=not conf.noScroll,noBlur=true} )
+	self.leftBtnConf = {x=m,w=tabW-(not conf.noScroll and 3*m or 2*m),h=conf.tabH, noBorder=true}
 	self.rightBoxConf = {x=tabW+2*m,y=m,w=conf.w-3*m-tabW,h=conf.h-2*m,scroll=true,noBlur=true}
 	self.tabTop = 0
 	self.tabNames = {} -- table of name = button

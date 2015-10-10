@@ -1,7 +1,7 @@
 local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common', ENV)
 local Hook = ROOT.import('Hook')
-local BaseElem = ROOT.import('Components/BaseElem')
+local BaseElem = ROOT.import('Components/Base/Base')
 local Box = ROOT.import('Components/Box')
 local Handle = ROOT.import('Components/Handle')
 local Button = ROOT.import('Components/Button')

@@ -1,9 +1,10 @@
 local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common', ENV)
-local Elem = ROOT.import('Components/Elem', ENV)
+local Elem = ROOT.import('Components/Base/Elem', ENV)
 local ThreadElem = class(Elem)
 
 local t = 0
+local slowThreadThreshold = 20
 function ThreadElem:init(...)
 	ThreadElem.super.init(self, ...)
 	self.name = 'ThreadElem'
@@ -11,7 +12,13 @@ function ThreadElem:init(...)
 end
 
 function ThreadElem._threadTick(pnl, self)
+	local n = 0
 	while not (self.dying or self.dead) do
+		n = n + 1
+		if n > slowThreadThreshold then
+			n = 0
+			self:trigger('slowThread')
+		end
 		self:trigger('thread')
 		coroutine.yield()
 	end

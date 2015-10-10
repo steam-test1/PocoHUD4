@@ -1,6 +1,6 @@
 local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common', ENV)
-local BaseElem = ROOT.import('Components/BaseElem')
+local BaseElem = ROOT.import('Components/Base/Base')
 local LabelElem = class(BaseElem)
 
 function LabelElem:init(...)

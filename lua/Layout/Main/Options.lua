@@ -109,6 +109,21 @@ export = function ( Tabs, BottomBox )
 				local type = O:_type(category,name)
 				local value = O:get(category,name,true)
 				local hint = O:_hint(category,name)
+				local idx = #objs+1
+				local contextMenu = {
+					{L('_context_reset_discard'),function()
+						local obj = objs[idx]
+						if obj then
+							obj[1]:val(O:get(obj[2],obj[3],true))
+						end
+					end},
+					{L('_context_reset_default'),function()
+						local obj = objs[idx]
+						if obj then
+							obj[1]:val(O:_default(obj[2],obj[3]))
+						end
+					end}
+				}
 				if hint:find('EN,') then
 					_(_.i( L(hint), {depth=2}))
 				end
@@ -116,10 +131,10 @@ export = function ( Tabs, BottomBox )
 				local tName = L('_opt_'..name)
 
 				if type == 'bool' then
-					objs[#objs+1] = {ROOT.import('Components/Value/Boolean'):new(box,{
+					objs[idx] = {ROOT.import('Components/Value/Boolean'):new(box,{
 						x = x()+10, y = y(30), w=290, h=30, category = category, name = name,
 						fontSize = fontSize, text=tName , value = value ,
-						hintText = hint
+						hintText = hint, contextMenu = contextMenu
 					}),category,name}
 				elseif type == 'num' then
 					local range = O:_range(category,name) or {}
@@ -128,36 +143,36 @@ export = function ( Tabs, BottomBox )
 						vanity = L(vanity):split(',')
 					end
 					local step = O:_step(category,name)
-					objs[#objs+1] = {ROOT.import('Components/Value/Number'):new(box,{
+					objs[idx] = {ROOT.import('Components/Value/Number'):new(box,{
 						x = x()+10, y = y(30), w=290, h=30, category = category, name = name, step = step,
 						fontSize = fontSize, text=tName, value = value, min = range[1], max = range[2], vanity = vanity,
-						hintText = hint
+						hintText = hint, contextMenu = contextMenu
 					}),category,name}
 				elseif type == 'color' then
-					objs[#objs+1] = {ROOT.import('Components/Value/Color'):new(box,{
+					objs[idx] = {ROOT.import('Components/Value/Color'):new(box,{
 						x = x()+10, y = y(30), w=290, h=30, category = category, name = name,
 						fontSize = fontSize, text=tName, value = value,
-						hintText = hint
+						hintText = hint, contextMenu = contextMenu
 					}),category,name}
 				elseif type == 'key' then
-					objs[#objs+1] = {ROOT.import('Components/Value/Key'):new(box,{
+					objs[idx] = {ROOT.import('Components/Value/Key'):new(box,{
 						x = x()+10, y = y(30), w=290, h=30, category = category, name = name,
 						fontSize = fontSize, text=tName, value = value,
-						hintText = hint
+						hintText = hint, contextMenu = contextMenu
 					}),category,name}
 				elseif type == 'string' then
 					local selection = O:_vanity(category,name)
 
-					objs[#objs+1] = {ROOT.import('Components/Value/String'):new(box,{
+					objs[idx] = {ROOT.import('Components/Value/String'):new(box,{
 						x = x()+10, y = y(30), w=290, h=30, category = category, name = name,
 						fontSize = fontSize, text=tName, value = value, selection = selection,
-						hintText = hint
+						hintText = hint, contextMenu = contextMenu
 					}),category,name}
 				else
-					objs[#objs+1] = {ENV.Value:new(box,{
+					objs[idx] = {ENV.Value:new(box,{
 						x = x()+10, y = y(30), w=290, h=30, category = category, name = name,
 						fontSize = fontSize, text=tName , value = value ,
-						hintText = hint
+						hintText = hint, contextMenu = contextMenu
 					}),category,name}
 				end
 				--[==[

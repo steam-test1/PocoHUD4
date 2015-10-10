@@ -1,6 +1,6 @@
 local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common', ENV)
-local ThreadElem = ROOT.import('Components/ThreadElem')
+local ThreadElem = ROOT.import('Components/Base/Thread')
 local Button = ROOT.import('Components/Button')
 local Box = class(ThreadElem)
 local scrollAmount, scrollFriction = 100, 3
@@ -14,7 +14,7 @@ function Box:init( ... ) -- x,y,w,h[,font,fontSize] + [noBorder]
 			name = 'blur',
 			texture = 'guis/textures/test_blur_df',
 			render_template = 'VertexColorTexturedBlur3D',
-			layer = -1, w=self.config.w, h=self.config.h
+			layer = -10, w=self.config.w, h=self.config.h
 		})
 	end
 	if not self.config.noBorder then
@@ -40,7 +40,7 @@ function Box:init( ... ) -- x,y,w,h[,font,fontSize] + [noBorder]
 			:on('release',_.b(self,'checkGripRelease'))
 			:on('leave',_.b(self,'gripLeave'))
 		table.insert(self.extraPnls, self.outerPnl)
-		self.pnl = self.pnl:panel(_.m({},self.config,{x=0, y=0, w=self.config.w-normalW, layer=1}))
+		self.pnl = self.pnl:panel(_.m({},self.config,{x=0, y=0, w=self.config.w-normalW, layer=-1}))
 		self
 			:on('press',function(btn, x, y)
 				if btn == 'mouse wheel down' and self.outerPnl:visible() then
@@ -187,7 +187,7 @@ function Box:autoSize(padding)
 		ww = math.max(x+w, ww)
 		hh = math.max(y+h + padding, hh)
 	end
-	self.pnl:set_size(self.pnl:w(),math.ceil(hh))
+	self.pnl:set_h(math.ceil(hh))
 	self.__scrollY = nil
 	self:updateElems()
 end

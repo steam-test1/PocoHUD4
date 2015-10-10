@@ -5,7 +5,6 @@ local Value = ROOT.import('Components/Value/Index')
 local ValueChoose = class(Value)
 
 function ValueChoose:init(parent,config)
-	config.contextMenu = function() return {{'111'},{'222'},{'333(TEST)'}} end
 	ValueChoose.super.init(self,parent,config)
 	-- Abstract!
 end

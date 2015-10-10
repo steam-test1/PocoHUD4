@@ -1,6 +1,6 @@
 local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common', ENV)
-local ThreadElem = ROOT.import('Components/ThreadElem')
+local ThreadElem = ROOT.import('Components/Base/Thread')
 local O = ROOT.import('Options')()
 local Value = class(ThreadElem)
 

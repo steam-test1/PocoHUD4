@@ -1,6 +1,6 @@
 local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common', ENV)
-local BaseElem = ROOT.import('Components/BaseElem')
+local BaseElem = ROOT.import('Components/Base/Base')
 local ContextElem = class(BaseElem)
 
 function ContextElem:init(...)
@@ -17,9 +17,11 @@ function ContextElem:_bindMenu(conf)
 			conf = conf()
 		end
 		if b == 1 or ( b == 0 and self.config.primaryContextMenu ) then
+			self:trigger('hideHint')
+			local size = 3+(self.config.fontSize or 18)
 			local menuElem = ListBox:new(self:getRoot(),{
-				x=x+2,y=y+2,w=150,h=math.min(#conf*20, 300), scroll=true,items=conf,
-				layer=100, fontSize=self.config.fontSize, bgColor=cl.Black:with_alpha(0.5)
+				x=x+2,y=y+2,w=200,h=math.min(#conf*(size+5), 400), scroll=true,items=conf,
+				layer=100, fontSize=size , bgColor=cl.Black:with_alpha(0.5)
 			})
 			self:getRoot():setTaunt(menuElem)
 			self.menuElem = menuElem

@@ -9,7 +9,7 @@ function UI:init()
 	self.ws = managers.gui_data:create_fullscreen_workspace()
 	self.ppnl = self.ws:panel()
 	local w, h = self.ws:size()
-	self.pnl = self.ppnl:panel({ name = 'UI', x=0, y=0, w = w, h = h, layer = tweak_data.gui.MENU_LAYER})
+	self.pnl = self.ppnl:panel({ name = 'UI', x=0, y=0, w = w, h = h, layer = tweak_data.gui.LOADING_SCREEN_LAYER})
 	self.dbgLbl = self.pnl:text{
 		text='HUD4 '..(ENV.inGame and 'Ingame' or 'Outgame'),
 		font = 'fonts/font_medium_mf', font_size = 15, color = cl.White:with_alpha(0.8),

@@ -31,10 +31,12 @@ function ValueString:init(parent,config)
 				end
 			end
 			self._lastClick = now()
-		elseif b == 'mouse wheel up' then
+		elseif b == 'mouse wheel up' and shift() then
 			self:next()
-		elseif b == 'mouse wheel down' then
+			return true, 'zoom_in'
+		elseif b == 'mouse wheel down' and shift() then
 			self:prev()
+			return true, 'zoom_out'
 		end
 	end)
 	:on('click',function(b,x,y)

@@ -28,7 +28,7 @@ function Hook:__impersonate(method)
 
     if valid and headers then
       for k,v in pairs(headers) do
-        v(...)
+        v({}, ...)
       end
     end
     local result
@@ -39,7 +39,7 @@ function Hook:__impersonate(method)
     end
     if valid and footers then
       for k,v in pairs(footers) do
-        v(...)
+        v(result, ...)
       end
     end
     return _.u(result)
@@ -59,6 +59,9 @@ end
 
 function Hook:body(method,fn)
   self:_impersonate(method)
+  if self.subscribers.body[method] then
+    _('!!HookErr: Duplicated Body @',method,'get your shit together!')
+  end
   self.subscribers.body[method] = fn
   return self
 end

@@ -1,6 +1,6 @@
 local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common', ENV)
-local BaseElem = ROOT.import('Components/BaseElem')
+local BaseElem = ROOT.import('Components/Base/Base')
 local Handle = class(BaseElem)
 
 function Handle:init(...)

@@ -25,42 +25,8 @@ local function drawJukebox(tab)
 			managers.music:stop()
 		end
 	}
-	Button:new(tab,{
-		x = 380, y = 40, w = 200,h=40,
-		text=L('_tab_juke_stop')
-	}):on('click',function(b) if b==0 then music.stop() end end)
 
-	Button:new(tab,{
-		x = 380, y = 90, w = 200,h=40,
-		text=L('_tab_juke_stealth')
-	}):on('click',function(b) if b==0 then music.set('setup') end end)
-
-	Button:new(tab,{
-		onClick = function(self)
-			music.set('control')
-		end,
-		x = 380, y = 140, w = 200,h=40,
-		text=L('_tab_juke_control')
-	}):on('click',function(b) if b==0 then music.set('control') end end)
-
-	Button:new(tab,{
-		onClick = function(self)
-			music.set('anticipation')
-		end,
-		x = 380, y = 190, w = 200,h=40,
-		text=L('_tab_juke_anticipation')
-	}):on('click',function(b) if b==0 then music.set('anticipation') end end)
-
-	Button:new(tab,{
-		onClick = function(self)
-			music.set('assault')
-		end,
-		x = 380, y = 240, w = 200,h=40,
-		text=L('_tab_juke_assault')
-	}):on('click',function(b) if b==0 then music.set('assault') end end)
-
-	local __, lbl = _.l({pnl = tab.pnl, x=10, y= tab.pnl:h() - 25, font_size = 20, color = cl.Gray},L('_tab_juke_shuffle_tip'),true)
-
+	local __, lbl = _.l({pnl = tab.pnl, x=10, y= tab.pnl:h() - 20, font_size = 15, color = cl.Silver},L('_tab_juke_shuffle_tip'),true)
 
 	local _addItems = function(oTab,inGame)
 		local y = 10;
@@ -75,29 +41,99 @@ local function drawJukebox(tab)
 			local listed = inGame and managers.music:playlist_contains(track_name) or managers.music:playlist_menu_contains(track_name)
 			local locked = track_locked[track_name]
 			local hint = locked and managers.localization:text('menu_jukebox_locked_' .. locked) or nil
-			Button:new(oTab,{
+			local btn = Button:new(oTab,{
 				x = 10, y = y, w = 200,h=30,
 				text={' '..text,locked and cl.Red or listed and cl.White or cl.Gray},
 				align='left',
 				hintText = hint
-			}):on('click',function(b) if b==0 then
+			}):on('play',function()
 				if not locked then
 					music[inGame and 'play' or 'set'](inGame and track_name or {track_name})
+					return true
 				end
+			end)
+			btn:on('click',function(b) if b==0 then
+				return btn:trigger('play')
 			end end)
 			y = y + 35
 		end
 		oTab:autoSize()
 	end
 
-	local oTabs = Tabs:new(tab,{name = 'jukeboxes',x = 10, y = 10, w = 370, tabW = 100, fontSize = 18, h = tab.pnl:height()-30, pTab = tab})
+	local oTabs = Tabs:new(tab,{name = 'jukeboxes',x = 10, y = 10, w = 370, tabW = 100, fontSize = 18, h = tab.pnl:height()-25, pTab = tab, noScroll=true})
 	-- [1] Heist musics
 	_addItems(oTabs:addTab(L('_tab_juke_heist')), true)
 	-- [2] Menu musics
 	_addItems(oTabs:addTab(L('_tab_juke_menu')), false)
+	oTabs:goto(L('_tab_juke_heist'))
 
+	Button:new(tab,{
+		x = 380, y = 40, w = 200,h=40,
+		text=L('_tab_juke_stop')
+	}):on('click',function(b) if b==0 then music.stop() end end)
 
+	Button:new(tab,{
+		x = 380, y = 90, w = 200,h=40,
+		text=L('_tab_juke_stealth')
+	}):on('click',function(b) if b==0 then music.set('setup') end end)
 
+	Button:new(tab,{
+		x = 380, y = 140, w = 200,h=40,
+		text=L('_tab_juke_control')
+	}):on('click',function(b) if b==0 then music.set('control') end end)
+
+	Button:new(tab,{
+		x = 380, y = 190, w = 200,h=40,
+		text=L('_tab_juke_anticipation')
+	}):on('click',function(b) if b==0 then music.set('anticipation') end end)
+
+	Button:new(tab,{
+		x = 380, y = 240, w = 200,h=40,
+		text=L('_tab_juke_assault')
+	}):on('click',function(b) if b==0 then music.set('assault') end end)
+
+	Button:new(tab,{
+		x = 380, y = 290, w = 200,h=40,
+		text=L('_tab_juke_random')
+	}):on('click',function(b) if b==0 then
+		-- Pick a random button from a visible tab
+		if oTabs.currentTab then
+			local elems = oTabs.currentTab.elems
+			local foundElems = {}
+			for k,elem in ipairs(elems) do
+				if elem.name == 'Button' then
+					table.insert(foundElems,elem)
+				end
+			end
+			if #foundElems == 0 then
+				return true, 'menu_error'
+			else
+				local foundElem = foundElems[math.random(#foundElems)]
+				foundElem:trigger('play')
+				return true, 'flashbang_bounce'
+			end
+		end
+	end end)
+
+	local cBtn = Button:new(tab,{
+		x = 380, y = 340, w = 200,h=100,
+		text='-', noBorder=true, color=cl.White, hColor=cl.White
+	})
+	cBtn:on('slowThread',function()
+		-- cBtn.lbl:set_text( _.s(
+		-- 	ROOT.import('Modules/Music').currentMusic,
+		-- 	' < ',
+		-- 	Global.music_manager.current_track or managers.music._current_track,
+		-- 	' > ',
+		-- 	Global.music_manager.current_event )
+		-- )
+		local currentMusic = ROOT.import('Modules/Music').currentMusic
+		_.l(cBtn.lbl,
+			currentMusic and {{O('root','showMusicTitlePrefix')..'\n',cl.Tan},{currentMusic}} or {{'UNKNOWN',cl.Silver}}
+		)
+	end)
+
+	tab:autoSize()
 end
 
 -- GLOBALS: Icon, Label
