@@ -2,6 +2,7 @@ local ENV = PocoHud4.moduleBegin()
 local _ = ROOT.import('Common', ENV)
 local UI = class()
 local Hook = ROOT.import('Hook')
+local O = ROOT.import('Options')()
 
 local buttonStrings = {0,1,2,3,4,'mouse wheel down','mouse wheel up'}
 function UI:init()
@@ -28,7 +29,13 @@ function UI:init()
 	end
 
 	self.hooks = {
-		Hook(_G.PlayerStandard):block('_get_input', mouseThunk, {}),
+		Hook(_G.PlayerStandard):block('_get_input', mouseThunk, {})
+		:footer('_determine_move_direction', function(__, self ,...)
+	    if O:get('root','pocoRoseHalt') and mouseThunk() then
+	      self._move_dir = nil
+	      self._normal_move_dir = nil
+	    end
+	  end),
 		Hook(_G.MenuRenderer):block('mouse_moved', mouseThunk, true),
 		Hook(_G.MenuInput):block('mouse_moved', mouseThunk, true),
 	}
@@ -61,11 +68,13 @@ function UI:registerElem(elem)
 	end
 end
 
-function UI:remove(elem)
+function UI:removeElem(elem)
 	if self.elems then
 		for k, foundElem in ipairs(_.m({},self.elems)) do
-			elem:destroy()
-			table.remove(self.elems,k)
+			if foundElem == elem then
+				foundElem:destroy()
+				table.remove(self.elems,k)
+			end
 		end
 	end
 end
@@ -166,7 +175,7 @@ function UI:_bakeMouseQuery( typeName, ... )
 			end
 		else
 			for k,elem in ipairs(self.elems or {}) do
-				if not stop then
+				if not stop and elem['queryMouse'..typeName] then
 					process( elem['queryMouse'..typeName]( elem, button, ... ) )
 				end
 			end

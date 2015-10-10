@@ -269,11 +269,27 @@ function Elem:clear()
 	self.elems = {}
 end
 
+function Elem:removeElem(elem)
+	if self.elems then
+		for k, foundElem in ipairs(_.m({},self.elems)) do
+			if foundElem == elem then
+				foundElem:destroy()
+				table.remove(self.elems,k)
+			end
+		end
+	end
+end
+
 function Elem:destroy()
 	if self.dead then return end
 	self:trigger('leave',0,0)
 	self.dead = true
 	self:clear()
+	if self.owner.removeElem then
+		self.owner:removeElem(self)
+	else
+		_('No RemoveElem from',self.name,'>>',self.owner and self.owner.name)
+	end
 	self.owner = nil
 	self.elems = nil
 	self.extraPnls = nil

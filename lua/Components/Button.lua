@@ -43,7 +43,7 @@ function Button:init(...) -- x,y,w,h[,font,fontSize] + [noBorder]
 		:on('leave',function() self._border:set_visible(false) end)
 	end
 	local mergedText, lbl = _.l(
-		_.m({	align = 'center', vertical = 'center', blend_mode='add'}, conf, { pnl = self.pnl, x = 0, y = 0}),
+		_.m({	align = 'center', vertical = 'center'}, conf, { pnl = self.pnl, x = 0, y = 0}),
 		conf.text or '', false
 	)
 	if lbl and mergedText ~= '' then

@@ -8,25 +8,26 @@ local slowThreadThreshold = 20
 function ThreadElem:init(...)
 	ThreadElem.super.init(self, ...)
 	self.name = 'ThreadElem'
-	self.thread = self.pnl:animate(self._threadTick,self)
+	self.__thread = self.pnl:animate(self._threadTick,self)
 end
 
-function ThreadElem._threadTick(pnl, self)
-	local n = 0
+function ThreadElem._threadTick(pnl, self, ...)
+	local n, dt = 0
 	while not (self.dying or self.dead) do
 		n = n + 1
 		if n > slowThreadThreshold then
 			n = 0
-			self:trigger('slowThread')
+			self:trigger('slowThread', dt, ...)
 		end
-		self:trigger('thread')
-		coroutine.yield()
+		self:trigger('thread', dt, ...)
+		dt = coroutine.yield()
 	end
 end
 
 function ThreadElem:destroy()
 	self.dying = true
-	self.thread = nil
+	self.__thread = nil
+	self.pnl:stop()
 	ThreadElem.super.destroy(self)
 end
 

@@ -26,7 +26,7 @@ local function drawJukebox(tab)
 		end
 	}
 
-	local __, lbl = _.l({pnl = tab.pnl, x=10, y= tab.pnl:h() - 20, font_size = 15, color = cl.Silver},L('_tab_juke_shuffle_tip'),true)
+	local __, lbl = _.l({pnl = tab.pnl, x=10, y= tab.pnl:h() - 25, font_size = 15, color = cl.Silver},L('_tab_juke_shuffle_tip'),true)
 
 	local _addItems = function(oTab,inGame)
 		local y = 10;
