@@ -226,6 +226,35 @@ function BuffModule:installHooks()
 	local skillIcon = 'guis/textures/pd2/skilltree/icons_atlas'
 	local module = self
 	self.storage = storage
+
+	local rectDict = {}
+	-- rectDict.inner-skill-name = {Label, {iconX,iconY}, isPerkIcon, isDebuff }
+	rectDict.combat_medic_damage_multiplier = {L('_buff_combatMedicDamageShort'), { 5, 7 }}
+	rectDict.no_ammo_cost = {L('_buff_bulletStormShort'),{ 4, 5 }}
+	rectDict.berserker_damage_multiplier = {L('_buff_swanSongShort'),{ 5, 12 }}
+
+	rectDict.dmg_multiplier_outnumbered = {L('_buff_underdogShort'),{2,1}}
+	rectDict.dmg_dampener_outnumbered = ''-- {'Def+',{2,1}} -- Dupe
+	rectDict.dmg_dampener_outnumbered_strong = ''-- {'Def+',{2,1}} -- Dupe
+	rectDict.overkill_damage_multiplier = {L('_buff_overkillShort'),{3,2}}
+	rectDict.passive_revive_damage_reduction = {L('_buff_painkillerShort'), { 0, 10 }}
+
+	rectDict.first_aid_damage_reduction = {L('_buff_first_aid_damage_reduction_upgrade'),{1,11}}
+	rectDict.melee_life_leech = {L('_buff_lifeLeechShort'),{7,4},true,true}
+	rectDict.dmg_dampener_close_contact = {L('_buff_first_aid_damage_reduction_upgrade'),{5,4},true}
+
+	local _keys = { -- Better names for Option pnls
+	BerserkerDamageMultiplier = 'SwanSong',
+	PassiveReviveDamageReduction = 'Painkiller',
+	FirstAidDamageReduction = 'FirstAid',
+	DmgMultiplierOutnumbered = 'Underdog',
+	CombatMedicDamageMultiplier = 'CombatMedic',
+	OverkillDamageMultiplier = 'Overkill',
+	NoAmmoCost = 'Bulletstorm',
+	MeleeLifeLeech = 'LifeLeech',
+	DmgDampenerCloseContact = 'CloseCombat'
+	}
+
 	--[======[] Hook sample []======[]
 	hook = Hook( _G.objName)
 	  -- body : replace a function (unique)
@@ -385,37 +414,28 @@ function BuffModule:installHooks()
 						st=t, et=stack[1]
 					}
 				else
-					module:RemoveBuff('triggerHappy')
+					module:removeBuff('triggerHappy')
 				end
 			end
 		end)
-	local rectDict = {}
-  -- rectDict.inner-skill-name = {Label, {iconX,iconY}, isPerkIcon, isDebuff }
-  rectDict.combat_medic_damage_multiplier = {L('_buff_combatMedicDamageShort'), { 5, 7 }}
-  rectDict.no_ammo_cost = {L('_buff_bulletStormShort'),{ 4, 5 }}
-  rectDict.berserker_damage_multiplier = {L('_buff_swanSongShort'),{ 5, 12 }}
+		:footer('_do_melee_damage', function( __, self, t, ... )
+			-- capture Close Combat
+			if managers.player:has_category_upgrade("melee", "stacking_hit_damage_multiplier") then
+				local stack = self._state_data.stacking_dmg_mul.melee
+				if stack and stack[1] and t < stack[1] then
+					local mul = 1 + managers.player:upgrade_value("melee", "stacking_hit_damage_multiplier") * stack[2]
+					module:Buff({
+						key='triggerHappy', good=true,
+						icon=skillIcon, iconRect = {4*64, 0*64, 64, 64},
+						text=_.f(mul)..'x',
+						st=t, et=stack[1]
+					})
+				else
+					module:removeBuff('triggerHappy')
+				end
+			end
+		end)
 
-  rectDict.dmg_multiplier_outnumbered = {L('_buff_underdogShort'),{2,1}}
-  rectDict.dmg_dampener_outnumbered = ''-- {'Def+',{2,1}} -- Dupe
-  rectDict.dmg_dampener_outnumbered_strong = ''-- {'Def+',{2,1}} -- Dupe
-  rectDict.overkill_damage_multiplier = {L('_buff_overkillShort'),{3,2}}
-  rectDict.passive_revive_damage_reduction = {L('_buff_painkillerShort'), { 0, 10 }}
-
-  rectDict.first_aid_damage_reduction = {L('_buff_first_aid_damage_reduction_upgrade'),{1,11}}
-  rectDict.melee_life_leech = {L('_buff_lifeLeechShort'),{7,4},true,true}
-  rectDict.dmg_dampener_close_contact = {L('_buff_first_aid_damage_reduction_upgrade'),{5,4},true}
-
-  local _keys = { -- Better names for Option pnls
-    BerserkerDamageMultiplier = 'SwanSong',
-    PassiveReviveDamageReduction = 'Painkiller',
-    FirstAidDamageReduction = 'FirstAid',
-    DmgMultiplierOutnumbered = 'Underdog',
-    CombatMedicDamageMultiplier = 'CombatMedic',
-    OverkillDamageMultiplier = 'Overkill',
-    NoAmmoCost = 'Bulletstorm',
-    MeleeLifeLeech = 'LifeLeech',
-    DmgDampenerCloseContact = 'CloseCombat'
-  }
 	Hook(_G.PlayerManager)
 		:footer('drop_carry', function( __, self ,...)
 	    module:Buff{
