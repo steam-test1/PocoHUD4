@@ -42,7 +42,7 @@ local function drawJukebox(tab)
 			local locked = track_locked[track_name]
 			local hint = locked and managers.localization:text('menu_jukebox_locked_' .. locked) or nil
 			local btn = Button:new(oTab,{
-				x = 10, y = y, w = 200,h=30,
+				x = 10, y = y, w = 200,h=25,
 				text={' '..text,locked and cl.Red or listed and cl.White or cl.Gray},
 				align='left',
 				hintText = hint
@@ -55,7 +55,7 @@ local function drawJukebox(tab)
 			btn:on('click',function(b) if b==0 then
 				return btn:trigger('play')
 			end end)
-			y = y + 35
+			y = y + 27
 		end
 		oTab:autoSize()
 	end

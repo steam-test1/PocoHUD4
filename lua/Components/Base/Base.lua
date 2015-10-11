@@ -48,7 +48,7 @@ function Elem:installHint()
 	end
 	local _buildOne = function(x,y)
 		hintPnl = rootPnl:panel{
-			x = 0, y = 0, w = 800, h = 200, layer=2000
+			x = 0, y = 0, w = 800, h = 200, layer=2000, name='hint'
 		}
 		local __, hintLbl = _.l({
 			pnl = hintPnl,x=5, y=5, font = config.hintFont, font_size = config.hintFontSize or 18, color = config.hintFontColor or cl.White,

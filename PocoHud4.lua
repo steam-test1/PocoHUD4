@@ -174,6 +174,10 @@ function PocoMods:Menu(drawFunc)
       self.UI:setTaunt()
       self.UI:useMouse(false)
       self.UI:removeElem(self._menuElem)
+      local hintPnl = self.UI.pnl:child('hint')
+      if hintPnl then
+    		hintPnl:parent():remove(hintPnl)
+      end
       managers.menu_component:post_event('menu_exit')
       self._menuElem = nil
     end

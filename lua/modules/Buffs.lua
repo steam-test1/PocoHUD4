@@ -8,76 +8,213 @@ local BuffModule = class(ModuleBase)
 local O = ROOT.import('Options')()
 local L = ROOT.import('Localizer')()
 
+local clBad = O('root','colorNegative')
+local clGood = O('root','colorPositive')
+local skillIcon = 'guis/textures/pd2/skilltree/icons_atlas'
+
 function BuffModule:postInit()
 	local rootUI = ROOT.UI
 	self.C = self.O('buff')
 	if self.C.enable then
 		local __, err = pcall(self.installHooks,self)
 		if err then
-			_('!!BuffModuleErr: ',err)
+			_.d('!!BuffModuleErr: ',err)
 		end
 	end
 	self.buffs = {}
 	self.mainElem = ThreadElem:new(rootUI,{x=0,y=0,w=rootUI.pnl:w(),h=rootUI.pnl:h()})
 	:on('thread',function(dt, ...)
-		pcall(self.updatePos,self,dt)
+		local __, err = pcall(self.update,self,dt)
+		if err then
+			_.d('!!BuffModuleErr: ',err)
+		end
 	end)
+	self.pnl = self.mainElem.pnl
+
 end
 
-function BuffModule:updatePos(dt)
-	local indexes = {}
-	for key,buffElem in pairs(self.buffs) do
-		local slot = buffElem.config.slot or 1
-		local origin = self:getOriginFromSlot(slot)
-		local i = (indexes[slot] or 0) + 1
-		buffElem.x = origin[1] + i * 100
-		-- buffElem.y = origin[1] + i * 100
-		indexes[slot] = i
-	end
+function BuffModule:getSlot(data)
+	local key = data.key
+	return O:get('buff','simpleBusyIndicator') and (key == 'transition' or key == 'reload' or key == 'charge') and 2 or 1
 end
 
-function BuffModule:getOriginFromSlot(slot)
-	return ({
-		{self.C.xPosition,self.C.yPosition},
-		{90,22},
-	})[slot or 1] or {50,50}
-end
-
-function BuffModule:getSlot(config)
-	return 1
-end
-
-function BuffModule:Buff(config) -- {key='',icon=''||{},text={{},{}},st,et}
-	if false == self.C[('show'.. ((config.key):gsub('^%l', string.upper)) )] then return end
-	local buff = self.buffs[config.key]
-	if buff and (buff.config.et ~= config.et or buff.config.good ~= config.good )then
+function BuffModule:Buff(data) -- {key='',icon=''||{},text={{},{}},st,et}
+	if false == self.C[('show'.. ((data.key):gsub('^%l', string.upper)) )] then return end
+	local buff = self.buffs[data.key]
+	if buff and (buff.data.et ~= data.et or buff.data.good ~= data.good )then
 		buff:destroy(1)
 		buff = nil
 	end
 	if not buff then
-		config.owner = self.mainElem
-		config.slot = self:getSlot(config)
-		local x, y = _.u(self:getOriginFromSlot(config.slot))
-		config.x = self.mainElem.pnl:w() * x / 100
-		config.y = self.mainElem.pnl:h() * y / 100
-		config.w = 40
-		config.h = 40
-		buff = BuffElem:new(self,config):fadeIn()
-		self.buffs[config.key] = buff
+		data.slot = self:getSlot(data)
+		buff = BuffElem:new(self,data)
+		self.buffs[data.key] = buff
 	else
-		buff:set(config)
+		buff:set(data)
 	end
 end
+
+function BuffModule:_checkSkills(t)
+	-- Check Another Buffs
+	-- Berserker
+	if managers.player:upgrade_value( 'player', 'melee_damage_health_ratio_multiplier', 0 )>0 then
+		local health_ratio = _.g('managers.player:player_unit():character_damage():health_ratio()')
+		if(health_ratio and health_ratio <= tweak_data.upgrades.player_damage_health_ratio_threshold ) then
+			local damage_ratio = 1 - ( health_ratio / math.max( 0.01, tweak_data.upgrades.player_damage_health_ratio_threshold ) )
+			local mMul =  1 + managers.player:upgrade_value( 'player', 'melee_damage_health_ratio_multiplier', 0 ) * damage_ratio
+			local rMul =  1 + managers.player:upgrade_value( 'player', 'damage_health_ratio_multiplier', 0 ) * damage_ratio
+			if mMul*rMul > 1 then
+				local text = {{(mMul>1 and _.f(mMul)..'x' or '')..(rMul>1 and ' '.._.f(rMul)..'x' or ''),clBad}}
+				self:Buff{
+					key= 'berserker', good=true,
+					icon=skillIcon,
+					iconRect = { 2*64, 2*64,64,64 },
+					text=text,
+					color=cl.Red,
+					st=O:get('buff','style')==2 and damage_ratio or 1-damage_ratio, et=1
+				}
+			end
+		else
+			self:removeBuff('berserker')
+		end
+	end
+	-- Stamina
+	local movement = _.g('managers.player:player_unit():movement()')
+	if movement then
+		local currSt = movement._stamina
+		local maxSt = movement:_max_stamina()
+		local thrSt = movement:is_above_stamina_threshold()
+		if currSt < maxSt then
+			self:Buff{
+				key= 'stamina', good=false,
+				icon=skillIcon,
+				iconRect = { 7*64, 3*64,64,64 },
+				text=thrSt and '' or L('_buff_exhausted'),
+				st=(currSt/maxSt), et=1
+			}
+		else
+			self:removeBuff('stamina')
+		end
+	end
+	-- Suppression
+	local supp = _.g('managers.player:player_unit():character_damage():effective_suppression_ratio()')
+	if supp and supp > 0 then
+		-- Not in effect as of now : local supp2 = math.lerp( 1, tweak_data.player.suppression.spread_mul, supp )
+		self:Buff{
+			key= 'suppressed', good=false,
+			icon=skillIcon,
+			iconRect = { 7*64, 0*64,64,64 },
+			text='', --_.f(supp2)..'x',
+			st=supp, et=1
+		}
+	else
+		self:removeBuff('suppressed')
+	end
+
+	local melee = self.state and self.state._state_data.meleeing and self.state:_get_melee_charge_lerp_value( t ) or 0
+	if melee > 0 then
+		self:Buff({
+			key= 'charge', good=true,
+			icon=skillIcon,
+			iconRect = { 4*64, 12*64,64,64 },
+			text='',
+			st=melee, et=1
+		})
+	else
+		self:removeBuff('charge')
+	end
+end
+
+function BuffModule:_lbl(lbl,txts)
+	local result = ''
+	if not alive(lbl) then
+		if type(txts)=='table' then
+			for __, t in pairs(txts) do
+				result = result .. tostring(t[1])
+			end
+		else
+			result = txts
+		end
+	else
+		if type(txts)=='table' then
+			local pos = 0
+			local posEnd = 0
+			local ranges = {}
+			for _k,txtObj in ipairs(txts or {}) do
+				txtObj[1] = tostring(txtObj[1])
+				result = result..txtObj[1]
+				local __, count = txtObj[1]:gsub('[^\128-\193]', '')
+				posEnd = pos + count
+				table.insert(ranges,{pos,posEnd,txtObj[2] or cl.White})
+				pos = posEnd
+			end
+			lbl:set_text(result)
+			for _,range in ipairs(ranges) do
+				lbl:set_range_color( range[1], range[2], range[3] or cl.Green)
+			end
+		elseif type(txts)=='string' then
+			result = txts
+			lbl:set_text(txts)
+		end
+	end
+	return result
+end
+
+function BuffModule:update(dt)
+	local t = now()
+	self:_checkSkills(t)
+	if t - (self._lastBuff or 0) >= 1/O:get('buff','maxFPS') then
+		self._lastBuff = t
+		local buffO = O:get('buff')
+		local style = buffO.style
+		local vanilla = style == 2
+		local align = buffO.justify
+		local size = (vanilla and 40 or buffO.buffSize) + buffO.gap
+		local count = 0
+		for key,buff in pairs(self.buffs) do
+			if not (buff.dead or buff.dying or self:getSlot(buff.data) == 2) then
+				count = count + 1
+			end
+		end
+		local x,y,move = self.pnl:size()
+		x = x * buffO.xPosition/100 - size/2
+		y = y * buffO.yPosition/100 - size/2
+		local oX,oY = x,y
+		if align == 1 then
+			move = size
+		elseif align == 2 then
+			move = size
+			if vanilla then
+				y = y - count * size / 2
+			else
+				x = x - count * size / 2
+			end
+		else
+			move = -size
+		end
+		for key,buff in _.p(self.buffs) do
+			if not (buff.dead or buff.dying) then
+				if self:getSlot(buff.data) == 2 then
+					-- do not move
+				elseif vanilla then
+					y = y + move
+				else
+					x = x + move
+				end
+				buff:draw(t,x,y)
+			elseif not buff.dying then
+				buff:destroy()
+			end
+		end
+	end
+end
+
 function BuffModule:removeBuff(key,immediately)
 	if not key then return end
-	local target = self.buffs[key]
-	self.buffs[key] = nil
-	if target then
-		if immediately then
-			target:destroy()
-		else
-			target:fadeOut()
-		end
+	local buff = self.buffs[key]
+	if buff and not buff.dying then
+		buff.dead = true
+		buff:destroy(immediately)
 	end
 end
 
@@ -107,20 +244,6 @@ function BuffModule:installHooks()
 
 	[]========================]======]--
 	Hook( _G.PlayerStandard)
-		-- :footer('_start_action_equip_weapon',function(__, self, ...)
-		-- 	if O('game','rememberGadgetState') then
-	  --     local wb = self._equipped_unit:base()
-	  --     if wb and storage.gadget and storage.gadget[wb._name_id] then
-	  --       if storage.gadget[wb._name_id] > 0 then
-	  --         wb:set_gadget_on(storage.gadget[wb._name_id] )
-	  --         local on = true or wb and wb.is_second_sight_on and wb:is_second_sight_on()
-	  --         if on then
-	  --           managers.enemy:add_delayed_clbk('gadget', function() module:_matchStance() end, now(1) + 0.01)
-	  --         end
-	  --       end
-	  --     end
-	  --   end
-		-- end)
 		:footer('_start_action_unequip_weapon', function(__, self, t ,data)
 	    local alt = self._ext_inventory:equipped_unit()
 	    for k,sel in pairs(self._ext_inventory._available_selections) do
@@ -139,9 +262,9 @@ function BuffModule:installHooks()
 
 	    local et = self._unequip_weapon_expire_t + altT
 	    if et then
-				_.c(_.s('st',t,'et',et))
 	      module:Buff{
 	        key='transition', good=false,
+	        icon=skillIcon,
 	        iconRect = { 0, 9*64,64,64 },
 	        text='',
 	        st=t, et=et
@@ -191,8 +314,6 @@ function BuffModule:installHooks()
 					key='interaction', good=true,
 					icon = 'guis/textures/pd2/pd2_waypoints',
 					iconRect = {224, 32, 32, 32 },
-					--icon = 'guis/textures/hud_icons',
-					--iconRect = { 96, 144, 48, 48 },
 					text='',
 					st=t, et=et
 				}
@@ -248,8 +369,26 @@ function BuffModule:installHooks()
 	        }
 	      end
 	    end
-	    return r
 	  end)
+		:footer('_check_action_primary_attack', function( __, self, t, ... )
+			-- capture TriggerHappy
+			local weap_base = self._equipped_unit:base()
+			local weapon_category = weap_base:weapon_tweak_data().category
+			if managers.player:has_category_upgrade(weapon_category, 'stacking_hit_damage_multiplier') then
+				local stack = self._state_data and self._state_data.stacking_dmg_mul and self._state_data.stacking_dmg_mul[weapon_category]
+				if stack and stack[1] and t < stack[1] then
+					local mul = 1 + managers.player:upgrade_value(weapon_category, 'stacking_hit_damage_multiplier') * stack[2]
+					module:Buff{
+						key='triggerHappy', good=true,
+						icon=skillIcon, iconRect = {7*64, 11*64, 64, 64},
+						text=_.f(mul)..'x',
+						st=t, et=stack[1]
+					}
+				else
+					module:RemoveBuff('triggerHappy')
+				end
+			end
+		end)
 	local rectDict = {}
   -- rectDict.inner-skill-name = {Label, {iconX,iconY}, isPerkIcon, isDebuff }
   rectDict.combat_medic_damage_multiplier = {L('_buff_combatMedicDamageShort'), { 5, 7 }}
@@ -318,6 +457,74 @@ function BuffModule:installHooks()
 	      }
 	    end
 	  end)
+	Hook(_G.PlayerMovement)
+		:footer('on_morale_boost', function( __, self, benefactor_unit )
+			if self._morale_boost then
+				local et = now() + tweak_data.upgrades.morale_boost_time
+				module:Buff{
+					key='boost', good=true,
+					icon=skillIcon,
+					iconRect = { 4*64, 9*64 ,64,64 },
+					st=now(), et=et
+				}
+			end
+		end)
+	Hook(_G.PlayerDamage)
+		:footer('set_regenerate_timer_to_max', function( __, self )
+			local sd = self._supperssion_data and self._supperssion_data.decay_start_t
+			if sd then
+				sd = math.max(0,sd-now())
+			end
+			local et = now()+self._regenerate_timer+(sd or 0)
+			if et then
+				module:Buff{
+					key='shield', good=false,
+					icon=skillIcon,
+					iconRect = { 6*64, 4*64,64,64 },
+					text='',
+					st=now(), et=et
+				}
+			end
+		end)
+	Hook(_G.ECMJammerBase)
+		:footer( 'set_active', function( __, self, active )
+			local et = self:battery_life() + now()
+			if active and (module.__lastECM or 0 < et)then
+				module.__lastECM = et
+				module:Buff{
+					key='ECM', good=true,
+					icon=skillIcon,
+					iconRect = { 1*64, 4*64,64,64 },
+					text='',
+					st=now(), et=et
+				}
+			end
+		end)
+		:footer('set_feedback_active', function( __, self )
+			local et = self._feedback_duration
+			if et then
+				module:Buff{
+					key='feedback', good=true,
+					icon=skillIcon,
+					iconRect = { 6*64, 2*64,64,64 },
+					text='',
+					st=now(), et=et+now()
+				}
+			end
+		end)
+	Hook(_G.SecurityCamera)
+		:footer('_start_tape_loop', function( __, self , tape_loop_t)
+			local et = tape_loop_t+6
+			if et then
+				module:Buff{
+					key='tapeLoop', good=true,
+					icon=skillIcon,
+					iconRect = { 4*64, 2*64,64,64 },
+					text='',
+					st=now(), et=et+now()
+				}
+			end
+		end)
 
 	_('INSTALL HOOKS DONE')
 end
