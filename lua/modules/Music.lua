@@ -17,7 +17,7 @@ function MusicModule:getTrackName(name)
 			break
 		end
 	end
-	return managers.localization:text((isHeistMusic and 'menu_jukebox_' or 'menu_jukebox_screen_')..name)
+	return managers.localization:text((isHeistMusic and 'menu_jukebox_' or 'menu_jukebox_screen_')..(name or '??'))
 end
 
 

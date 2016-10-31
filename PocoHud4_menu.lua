@@ -12,5 +12,7 @@ if rawget(_G,'PocoHud4') then
 
 
 else
-  _('PocoHud4 Not instantiated')
+  if (rawget(_G,'log')) then
+    log('PocoHud4 Not instantiated')
+  end
 end

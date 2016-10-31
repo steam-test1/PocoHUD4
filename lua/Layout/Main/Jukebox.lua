@@ -42,7 +42,7 @@ local function drawJukebox(tab)
 			local locked = track_locked[track_name]
 			local hint = locked and managers.localization:text('menu_jukebox_locked_' .. locked) or nil
 			local btn = Button:new(oTab,{
-				x = 10, y = y, w = 200,h=25,
+				x = 10, y = y, w = 215,h=25,
 				text={' '..text,locked and cl.Red or listed and cl.White or cl.Gray},
 				align='left',
 				hintText = hint
@@ -110,7 +110,7 @@ local function drawJukebox(tab)
 			else
 				local foundElem = foundElems[math.random(#foundElems)]
 				foundElem:trigger('play')
-				return true, 'flashbang_bounce'
+				return true, 'count_1_finished'
 			end
 		end
 	end end)

@@ -15,7 +15,7 @@ export = function ( Tabs, BottomBox )
 	-- buttons
 
 	ENV.Button:new(BottomBox,{
-		x = 10, y = 10, w = 400, h=30, fontSize = 20,
+		x = 10, y = 10, w = 395, h=30, fontSize = 20,
 		text={L('_btn_apply_and_reload'),cl.SteelBlue},
 		hintText = L('_desc_apply_and_reload')
 	}):on('click',function(b)
@@ -33,7 +33,7 @@ export = function ( Tabs, BottomBox )
  	end)
 
 	ENV.Button:new(BottomBox,{
-		x = 410, y = 10, w = 200, h=30, fontSize = 18,
+		x = 410, y = 10, w = 195, h=30, fontSize = 18,
 		text={L('_btn_discard'),cl.Gray},
 		hintText = L('_desc_discard')
 	}):on('click',function(b)

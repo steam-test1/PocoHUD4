@@ -16,24 +16,27 @@ if rawget(_G, 'PocoMods') then
   payload = PocoMods.payload
 end
 local PocoMods = {}
+PocoMods.VERSION = 4
 PocoMods.savePath = rawget(_G,'SavePath') or currModPath
 PocoMods.currModPath = currModPath
 
 PocoMods.moduleBegin = function()
-    local org = debug.getinfo(2,'S').source:lower()
-    local name = org:gsub('.+/lua/',''):gsub('\.luac?','')
-    local moduleEnv = setmetatable({},{__index=_G})
-    moduleEnv._name = name
-    moduleEnv._modules = modules
-    moduleEnv.ROOT = PocoMods
-    local newEnv = modules[name] or setmetatable({},{__index=moduleEnv})
-    modules[name] = newEnv
-    setfenv(2,newEnv)
-    return newEnv
-  end
+  local org = debug.getinfo(2,'S').source:lower()
+  local name = org:gsub('.+/lua/',''):gsub('\.luac?','')
+  local moduleEnv = setmetatable({},{__index=_G})
+  moduleEnv._name = name
+  moduleEnv._modules = modules
+  moduleEnv.ROOT = PocoMods
+  local newEnv = modules[name] or setmetatable({},{__index=moduleEnv})
+  modules[name] = newEnv
+  setfenv(2,newEnv)
+  return newEnv
+end
+
 PocoMods.moduleEnd = function ()
-    setfenv(2,_G)
-  end
+  setfenv(2,_G)
+end
+
 PocoMods.import = function (name, spread)
   name = name:lower()
   -- log(' import:'..name..' from '..debug.getinfo(2).short_src:lower())
@@ -62,7 +65,9 @@ PocoMods.import = function (name, spread)
     end
   end
 end
+
 PocoMods._kbd = Input:keyboard()
+
 PocoMods.unload = function()
   if PocoMods.UI then
     PocoMods.UI:destroy()
@@ -78,7 +83,9 @@ PocoMods.unload = function()
 
   -- TODO: Save payload to PocoMods.payload @ here
 end
+
 PocoMods.active = true
+
 function PocoMods:sanitizeKey(key)
 	local keyT = type(key)
 	if keyT == 'number' then

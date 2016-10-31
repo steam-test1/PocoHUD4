@@ -244,15 +244,15 @@ function BuffModule:installHooks()
 	rectDict.dmg_dampener_close_contact = {L('_buff_first_aid_damage_reduction_upgrade'),{5,4},true}
 
 	local _keys = { -- Better names for Option pnls
-	BerserkerDamageMultiplier = 'SwanSong',
-	PassiveReviveDamageReduction = 'Painkiller',
-	FirstAidDamageReduction = 'FirstAid',
-	DmgMultiplierOutnumbered = 'Underdog',
-	CombatMedicDamageMultiplier = 'CombatMedic',
-	OverkillDamageMultiplier = 'Overkill',
-	NoAmmoCost = 'Bulletstorm',
-	MeleeLifeLeech = 'LifeLeech',
-	DmgDampenerCloseContact = 'CloseCombat'
+		BerserkerDamageMultiplier = 'SwanSong',
+		PassiveReviveDamageReduction = 'Painkiller',
+		FirstAidDamageReduction = 'FirstAid',
+		DmgMultiplierOutnumbered = 'Underdog',
+		CombatMedicDamageMultiplier = 'CombatMedic',
+		OverkillDamageMultiplier = 'Overkill',
+		NoAmmoCost = 'Bulletstorm',
+		MeleeLifeLeech = 'LifeLeech',
+		DmgDampenerCloseContact = 'CloseCombat'
 	}
 
 	--[======[] Hook sample []======[]
@@ -405,7 +405,8 @@ function BuffModule:installHooks()
 			local weapon_category = weap_base:weapon_tweak_data().category
 			if managers.player:has_category_upgrade(weapon_category, 'stacking_hit_damage_multiplier') then
 				local stack = self._state_data and self._state_data.stacking_dmg_mul and self._state_data.stacking_dmg_mul[weapon_category]
-				if stack and stack[1] and t < stack[1] then
+				local thMaxTime = (module.__triggerHappyMaxTime or (stack and stack[1]) or 0)
+				if thMaxTime and (t < thMaxTime) then
 					local mul = 1 + managers.player:upgrade_value(weapon_category, 'stacking_hit_damage_multiplier') * stack[2]
 					module:Buff{
 						key='triggerHappy', good=true,
@@ -435,6 +436,14 @@ function BuffModule:installHooks()
 				end
 			end
 		end)
+
+	Hook( _G.PlayerStandard)
+		:header('TriggerHappy', function(player_manager, damage_bonus, max_stacks, max_time)
+			-- feeds in TriggerHappy max-time
+			module.__triggerHappyMaxTime = max_time
+			return Run('Function*TrgHpy', player_manager, damage_bonus, max_stacks, max_time)
+		end)
+
 
 	Hook(_G.PlayerManager)
 		:footer('drop_carry', function( __, self ,...)

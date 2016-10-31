@@ -32,7 +32,7 @@ local UNKNOWN = 'UNKNOWN'
 function MainLayout.drawRoot( UI )
 	local FullScreenElem = ENV.BaseElem:new(UI, {x=0,y=0,w=UI.pnl:w(),h=UI.pnl:h()})
 	local RootElem = ENV.BaseElem:new(FullScreenElem, {x=0,y=0,w=w,h=h})
-	local RootHandle = ENV.Handle:new(RootElem, {color=cl.White,fontSize=20,text={'PocoHud4',{_.s(' (',ROOT._INSTANCE,')'), cl.Yellow}}, x=0,w=w,h=25})
+	local RootHandle = ENV.Handle:new(RootElem, {color=cl.White,fontSize=20,text={L('_client_name'),{_.s(' (',ROOT._INSTANCE,')'), cl.Yellow}}, x=0,w=w,h=25})
 	RootHandle.pnl:bitmap{
 		name = 'blur',
 		texture = 'guis/textures/test_blur_df',

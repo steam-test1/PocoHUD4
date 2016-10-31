@@ -38,7 +38,7 @@ export = function ( Tabs )
 	local rev, desc = vD.gitRev or UNKNOWN, vD.gitDescribe or UNKNOWN
 	local versionText = { {vO.description,cl.White}, '\n', {desc, cl.Green}, ' (r', rev, ')'	}
 
-	ENV.Button:new(currBox, {x=5,y=5,w=200,h=50,text=versionText,fontSize=20})
+	ENV.Button:new(currBox, {x=5,y=5,w=200,h=50,text=versionText,fontSize=20,primaryContextMenu=true})
 		:on('click',openCbk('http://steamcommunity.com/groups/pocomods') )
 	ENV.Button:new(currBox, {x=210,y=5,w=100,h=50,text='@Zenyr',fontSize=20,color=cl.OrangeRed,hColor=cl.Orange})
 		:on('click',openCbk('https://twitter.com/zenyr') )
