@@ -1,4 +1,4 @@
-if rawget(_G,'PocoHud4') then
+if rawget(_G, 'PocoHud4') then
   local _ = PocoHud4.import('Common')
   if PocoHud4._menuElem then
     PocoHud4:Menu(false)
@@ -12,7 +12,7 @@ if rawget(_G,'PocoHud4') then
 
 
 else
-  if (rawget(_G,'log')) then
+  if (rawget(_G, 'log')) then
     log('PocoHud4 Not instantiated')
   end
 end
