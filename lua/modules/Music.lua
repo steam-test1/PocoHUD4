@@ -29,13 +29,13 @@ function MusicModule:installHooks()
 		music_heist_control = 1
 	}
 	Hook(getmetatable(Global.music_manager.source))
-	:footer('set_switch', function(__, tSelf,switch,track)
+	:footer('set_switch', function(__, tSelf, switch, track)
 		if switch == 'music_randomizer' then
 			self.currentMusic = self:getTrackName(track)
 		end
 	end)
 	Hook(managers.music)
-	:footer('post_event', function(__, tSelf,track)
+	:footer('post_event', function(__, tSelf, track)
 		if not ignore[track] then
 			self.currentMusic = self:getTrackName(track)
 		end
