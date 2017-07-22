@@ -8,7 +8,7 @@ function Hook:init(origin,...)
   self.origin = origin or {} -- Silent fails when Origin is invalid
   self.subscribers = {header={},body={},footer={}}
   self.originals = {}
-  Hooks[origin] = self
+  Hooks[self.origin] = self
 end
 
 function Hook:_impersonate(method)

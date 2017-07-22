@@ -4,6 +4,7 @@
   "description": "PocoHud4 for Payday2",
   "main": "PocoHud4.lua",
   "scripts": {
+    "copy": "",
     "version": "babel-node build/version.js",
     "postversion": "REM git push && REM git push --tags"
   },

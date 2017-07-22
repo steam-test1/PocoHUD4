@@ -142,7 +142,7 @@ export = function ( Tabs )
 			}
 		end
 		for host,_jobs in _.p(host_list) do
-			local jobs = table.deepcopy(_jobs)
+			local jobs = deep_clone(_jobs)
 			for no, heist in _.p(job_list) do
 				local jobData = tweak_data.narrative:job_data(heist)
 

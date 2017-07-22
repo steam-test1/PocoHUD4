@@ -35,7 +35,11 @@ function Option:default(category)
 end
 
 function Option:load()
-	self.items = _.j:fromFile(JSONFileName)
+	if not pcall(function ()
+		self.items = _.j:fromFile(JSONFileName)
+	end) then
+		self.items = {};
+	end
 end
 
 function Option:save()
@@ -78,7 +82,7 @@ end
 
 function Option:_get(isScheme, category,name)
 	local o = isScheme and self.scheme or self.items
-	local result = o[category] and o[category][name]
+	local result = o and o[category] and o[category][name]
 	if isNil(result) then
 		if isScheme then
 			_('Option:_get was Nil', category, name) -- this should NOT happen
